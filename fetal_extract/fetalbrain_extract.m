@@ -87,9 +87,25 @@ savevol=vol(x1:x2,y1:y2,:);
 savehdr=hdr;
 savehdr.fname=hdr.fname(1:(size(hdr.fname,2)-4));
 savehdr.fname=strcat(savehdr.fname,'_sreg1.img');
-savehdr.dim=[double(x2-x1+1) double(y2-y1+1) sizez];
+dimx=x2-x1+1;   dimy=y2-y1+1;
+savehdr.dim=[double(dimx) double(dimy) sizez];
 spm_write_vol(savehdr,savevol);
 
+% save jpg
+savejpgname=hdr.fname(1:(size(hdr.fname,2)-4));
+savejpgname=strcat(savejpgname,'_sreg1.jpg');
+
+a=zeros(dimx*4,dimy*2);
+for i=1:4;
+    a(dimx*(i-1)+1:dimx*i,1:dimy)=vol(x1:x2,y1:y2,int16(sizez/10*(i+1)));
+end;
+for i=1:4;
+    a(dimx*(i-1)+1:dimx*i,dimy+1:dimy*2)=vol(x1:x2,y1:y2,int16(sizez/10*(i+5)));
+end;
+    
+a=uint8(a/max(max(a))*256);
+a=imresize(a,2);
+imwrite(a,savejpgname,'jpg');
 
 %% With other parameter of canny edge 
 for j=1:3;
@@ -144,5 +160,22 @@ savevol=vol(x1:x2,y1:y2,:);
 savehdr=hdr;
 savehdr.fname=hdr.fname(1:(size(hdr.fname,2)-4));
 savehdr.fname=strcat(savehdr.fname,'_sreg2.img');
-savehdr.dim=[double(x2-x1+1) double(y2-y1+1) sizez];
+dimx=x2-x1+1;   dimy=y2-y1+1;
+savehdr.dim=[double(dimx) double(dimy) sizez];
 spm_write_vol(savehdr,savevol);
+
+% save jpg
+savejpgname=hdr.fname(1:(size(hdr.fname,2)-4));
+savejpgname=strcat(savejpgname,'_sreg2.jpg');
+
+a=zeros(dimx*4,dimy*2);
+for i=1:4;
+    a(dimx*(i-1)+1:dimx*i,1:dimy)=vol(x1:x2,y1:y2,int16(sizez/10*(i+1)));
+end;
+for i=1:4;
+    a(dimx*(i-1)+1:dimx*i,dimy+1:dimy*2)=vol(x1:x2,y1:y2,int16(sizez/10*(i+5)));
+end;
+    
+a=uint8(a/max(max(a))*256);
+a=imresize(a,2);
+imwrite(a,savejpgname,'jpg');

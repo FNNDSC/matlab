@@ -1,5 +1,5 @@
 function [mini,centerx,centery]=corework(vol,slicenum,diameter,cannythres)
-
+%dddddd
 
 ims=vol(:,:,slicenum);
 imscan=edge(ims,'canny',cannythres);
