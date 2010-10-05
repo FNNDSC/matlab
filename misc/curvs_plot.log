@@ -1,0 +1,113 @@
+%
+% Analysis on KFHRSC
+%
+$>mris_curvature_stats.bash -v 10 -t 123456 -w 0 -s pa1 pa4 pa5 pa6
+
+
+%
+% Curves process
+%
+[x86_64-cnde]...s_power0-freeze$>mkdir 104 156 30.4 31.1 34.0 365 36.7 37.5 38.1 38.4 39.7 40.3 801
+$SUBJECTS_DIR>mris_waveletsProcess_doBatch.bash -v 10 -f -t 12 -w 0 30.4
+[x86_64-cnde]...s_power0-freeze$>self_construct.bash -v 10 30.4
+
+% Remember to set the function in k1k2_createCurv.m also!
+[acell_curv] = k1k2_batch('rh', 'rh.smoothwm.S');
+
+[x86_64-cnde]...s_power0-freeze$>./fK1K2.bash -c -a 2
+
+
+%
+% Vols process
+%
+[x86_64]...foldingAnalysis$>mri_volprocess_doBatch -f -v 10 [0-9]*
+	
+
+
+curvs_delFind('curv_analysis', '?h.smoothwm*|grep -v recon', 'curv_analysis_noDC')
+
+[cell_table, cell_hist] = waveletbars('lh');
+[M_table] = centroids_process(cell_hist{2});
+
+
+cd /autofs/space/heisenberg_002/users/rudolph/data/newbornAndPediatric/allAges_power0
+
+c_plotArgsHist= { 1000, 1, -1.5, 1.5, 1, 0 };		% no animate
+c_plotArgsHist= { 1000, 1, -1.5, 1.5, 1, 1 };		% animate
+[cell_table, cell_hist]= waveletbars('rh', 1, c_plotArgsHist);
+c_line= { '-or', '-sm', '-^b' };
+v_group= [9 3 3];
+c_plotArgs= { v_group, c_line};
+[M_table]= centroids_process(cell_hist{1}, c_plotArgs, 'curv')
+[M_table]= centroids_process(cell_hist{2}, c_plotArgs, 'sulc')
+[M_table]= centroids_process(cell_hist{3}, c_plotArgs, 'K')
+[M_table]= centroids_process(cell_hist{4}, c_plotArgs, 'H')
+[M_table]= centroids_process(cell_hist{5}, c_plotArgs, 'k1')
+[M_table]= centroids_process(cell_hist{6}, c_plotArgs, 'k2')
+[M_table]= centroids_process(cell_hist{7}, c_plotArgs, 'S')
+[M_table]= centroids_process(cell_hist{7}, c_plotArgs, 'C')
+
+cM=cell(1,7);
+T=cell_table{1};
+[rows cols]=size(T);
+for i=1:7
+	cM{i}	= zeros(rows, 9);
+	cM{i}(:,1)= cell_table{i}(:,1);
+	cM{i}(:,2)= cell_table{i}(:,3);
+	cM{i}(:,3)= cell_table{i}(:,9);
+	cM{i}(:,4)= cell_table{i}(:,10);
+	cM{i}(:,5)= cell_table{i}(:,11);
+	cM{i}(:,6)= cell_table{i}(:,12);
+	cM{i}(:,7)= cell_table{i}(:,13);
+	cM{i}(:,8)= cell_table{i}(:,14);
+	cM{i}(:,9)= cell_table{i}(:,15);
+end
+
+[v_curv, fnum]= read_curv('rh.smoothwm.K1');
+f_threshold=2.0;
+v_pcurv=v_curv;
+for i=1:length(v_curv)
+	if v_curv(i)<f_threshold
+		v_pcurv(i)=0.0;
+	else
+		v_pcurv(i)=v_curv(i);
+	end
+end
+write_curv('rh.smoothwm.K1.gFilt', v_pcurv, fnum);
+
+%
+% iFFT
+[v_curvK1, fnum] = read_curv('rh.smoothwm.K1');
+[v_curvK2, fnum] = read_curv('rh.smoothwm.K2');
+viFFT_curvK1 = ifft(v_curvK1);
+viFFT_curvK2 = ifft(v_curvK2);
+scatter(real(viFFT_curvK1), imag(viFFT_curvK1))
+hold on
+scatter(real(viFFT_curvK2), imag(viFFT_curvK2))
+F = [ [viFFT_curvK1]' [viFFT_curvK2]'];
+absF = abs(F);
+histogram(F, 1000);
+
+[status,lsExec]= system('type -all ls | head -n 1 | sed "s|.*\ is \(.*\)|\1|"');
+[status,str_dirAll]= system(sprintf('%s -d [0-9]* | sort -n'), lsExec);
+[status,str_dirAll]= system('/homes/9/rudolph/arch/Darwin32/bin/ls -d [0-9]* | sort -n');
+[status,str_dirAll]= system('/bin/ls -d [0-9]* | sort -n');
+str_start= pwd;
+% Create a cell array of the directory names
+ndir= 1;
+[str_dir str_rem]= strtok(str_dirAll);
+cell_dir{ndir}= str_dir;
+while length(str_rem)
+	[str_dir str_rem]= strtok(str_rem);
+	ndir= ndir + 1;
+	cell_dir{ndir}= str_dir;
+end
+cols= ndir - 1;
+for dir = 1:cols
+	str_dir= cell_dir{dir};
+	cd(str_dir);
+	[aviFFT_curvK1, aviFFT_curvK2, aviFFT_curvK, aviFFT_curvH,] = hisc('rh.smoothwm', 1, 1);
+	cd(str_start);
+end
+
+
