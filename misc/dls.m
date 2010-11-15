@@ -40,7 +40,7 @@ if length(varargin)
 	    str_ls 	= sprintf('%s %s', str_ls, str_arg);
 	end
 end
-
+disp(str_ls);
 [status, str_dirAll]	= system(str_ls);
 
 % Create a cell array of the directory names

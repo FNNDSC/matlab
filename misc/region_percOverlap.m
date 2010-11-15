@@ -95,9 +95,14 @@ end
 if f_xo >= 0.0
     f_areaA     = (x_ra - x_la) * (y_ta - y_ba);
     f_areaB     = (x_rb - x_lb) * (y_tb - y_bb);
+    
     % Check for boxA "below" or "above" boxB
     if y_ba >= y_bb
-        % boxA is above boxB
+        % boxA is "above" boxB (can also be wholly contained in boxB)
+        % According to the assignment of boxA and boxB conditions, the
+        % only possible definition for one within the other is boxA
+        % in boxB.
+        %
         % is boxA wholly within boxB?
         if y_tb > y_ta
             f_yo = y_ta - y_ba;
@@ -107,6 +112,11 @@ if f_xo >= 0.0
     else
         % boxA is below boxB
         f_yo = y_ta - y_bb;
+    end
+    
+    if f_yo < 0.0
+        % There was no overlap in y...
+        f_yo = 0.0;
     end
 
     f_overlapArea = f_xo * f_yo;
