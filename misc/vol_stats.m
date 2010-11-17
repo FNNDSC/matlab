@@ -7,7 +7,7 @@ function [aS_stats] = vol_stats(aV_input, varargin)
 %
 % ARGUMENTS
 %    INPUTS
-%    aV_input		volume			data space to "invert"
+%    aV_input		volume			data space to analyze
 %    aV_maskVol		volume (optional)	if specified, process only
 %                                                 entries in volume that
 %                                                 correspond to non-zero
