@@ -141,6 +141,7 @@ function [C]    = curvatureAnalysis_drive(astr_annotFile, astr_groupFileID, vara
     C = set(C, 'hemiFilter',                    str_hemi);
     C = set(C, 'usePlotLines',                  b_plotLines);
     C = set(C, 'b_curvFuncClear',               1);
+    C = set(C, 'histogramsPlot',                b_plotHistograms);
     if ~b_autodijk
         if ~b_curvSpec
             C = set(C, 'curvFuncFilter',    'K');
