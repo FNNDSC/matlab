@@ -1,8 +1,8 @@
-function [af_perc] = region_percOverlap(av_R1, av_R2)
+function [af_perc, af_A1, af_A2] = region_percOverlap(av_R1, av_R2)
 %
 % NAME
 %
-%       function [af_perc] = region_percOverlap( av_R1, av_R2)
+%       function [af_perc, af_A1, af_A2] = region_percOverlap( av_R1, av_R2)
 %
 % ARGUMENTS
 %
@@ -15,6 +15,8 @@ function [af_perc] = region_percOverlap(av_R1, av_R2)
 %                                                       the two regions (as
 %                                                       a percentage of 
 %                                                       smaller box)
+%       af_A1                           float           area of first region
+%       af_A2                           float           area of second region
 %       
 % DESCRIPTION
 %
@@ -43,12 +45,13 @@ function [af_perc] = region_percOverlap(av_R1, av_R2)
 %    (xn1, yn1)-->+---------------+
 %
 % PRECONDITIONS
-%       o v_R1 and v_R2 should be 4 element vectors
+%       o <av_R1> and <av_R2> should be 4 element vectors
 %
 % POSTCONDITIONS
-%       o af_perc is a percentage (of the smaller region)
+%       o <af_perc> is a percentage (of the smaller region)
 %         overlap.
-%       o If there is no overlap, af_perc is zero.
+%       o Areas of both regions.
+%       o If there is no overlap, <af_perc> is zero.
 %
 % HISTORY
 % 12-Nov-2010
@@ -92,9 +95,10 @@ else
     f_xo        = x_ra - x_lb;
 end
 
+f_areaA         = (x_ra - x_la) * (y_ta - y_ba);
+f_areaB         = (x_rb - x_lb) * (y_tb - y_bb);
+
 if f_xo >= 0.0
-    f_areaA     = (x_ra - x_la) * (y_ta - y_ba);
-    f_areaB     = (x_rb - x_lb) * (y_tb - y_bb);
     
     % Check for boxA "below" or "above" boxB
     if y_ba >= y_bb
@@ -129,5 +133,6 @@ if f_xo >= 0.0
 end
 
 af_perc = af_perc * 100;
-
+af_A1   = f_areaA;
+af_A2   = f_areaB;
 end
