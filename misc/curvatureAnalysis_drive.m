@@ -104,7 +104,7 @@ function [C]    = curvatureAnalysis_drive(astr_annotFile, astr_groupFileID, vara
         b_plotLines	        = varargin{4};
     end;
     if length(varargin) >= 5
-        b_plotHistograms        = varargin{4};
+        b_plotHistograms        = varargin{5};
     end;
         if length(varargin) >= 6
         b_autodijk	        = varargin{6};
@@ -141,7 +141,7 @@ function [C]    = curvatureAnalysis_drive(astr_annotFile, astr_groupFileID, vara
     C = set(C, 'hemiFilter',                    str_hemi);
     C = set(C, 'usePlotLines',                  b_plotLines);
     C = set(C, 'b_curvFuncClear',               1);
-    C = set(C, 'histogramsPlot',                b_plotHistograms);
+    C = set(C, 'b_drawHistPlots',               b_plotHistograms);
     if ~b_autodijk
         if ~b_curvSpec
             C = set(C, 'curvFuncFilter',    'K');
@@ -179,7 +179,6 @@ function [C]    = curvatureAnalysis_drive(astr_annotFile, astr_groupFileID, vara
         C = set(C, 'b_upperLimit',      0);
     end
     C = set(C, 'b_curvaturesPostScale', 0);
-    C = set(C, 'b_drawHistPlots',       0);
     C = set(C, 'b_centroidLabelPlot',   1);
 
     if b_regionFilter
