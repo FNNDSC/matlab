@@ -98,24 +98,33 @@ end
 f_areaA         = (x_ra - x_la) * (y_ta - y_ba);
 f_areaB         = (x_rb - x_lb) * (y_tb - y_bb);
 
+b_boxBinBoxA    = 0;
 if f_xo >= 0.0
     
-    % Check for boxA "below" or "above" boxB
-    if y_ba >= y_bb
-        % boxA is "above" boxB (can also be wholly contained in boxB)
-        % According to the assignment of boxA and boxB conditions, the
-        % only possible definition for one within the other is boxA
-        % in boxB.
-        %
-        % is boxA wholly within boxB?
-        if y_tb > y_ta
-            f_yo = y_ta - y_ba;
+    % Check if boxB's y dimension is wholly contained within boxA:
+    if (y_ba < y_bb) & (y_ta > y_tb)
+        f_yo = y_tb - y_bb;
+        b_boxBinBoxA = 1;
+    end
+    
+    % Check for boxA's y dimension is "below", "above" or "within" boxB
+    if ~b_boxBinBoxA
+        if y_ba >= y_bb 
+            % boxA is "above" boxB (can also be wholly contained in boxB)
+            % According to the assignment of boxA and boxB conditions, the
+            % only possible definition for one within the other is boxA
+            % in boxB.
+            %
+            % is boxA wholly within boxB?
+            if y_tb > y_ta
+                f_yo = y_ta - y_ba;
+            else
+                f_yo = y_tb - y_ba;
+            end
         else
-            f_yo = y_tb - y_ba;
+            % boxA is below boxB
+            f_yo = y_ta - y_bb;
         end
-    else
-        % boxA is below boxB
-        f_yo = y_ta - y_bb;
     end
     
     if f_yo < 0.0

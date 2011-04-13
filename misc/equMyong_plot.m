@@ -7,23 +7,21 @@ function [ret] = equMyong_plot(av_coeff1, aM_D1, av_coeff2, aM_D2, varargin)
 %                                       av_coeff2,              ...
 %                                       aM_D2,                  ...
 %                                       [astr_title,            ...
-%                                        astr_xlabel,           ...
-%                                        astr_xlabel])
+%                                        ab_logPlot])
 %
 % ARGUMENTS
 %       
 %       INPUT
 %       av_coeff1               vector          [a b c g] coefficients 1
-%       av_coeff2               vector          [a b c g] coefficients 2 
 %       aM_D1                   matrix          (boy)  table of male data 
+%       av_coeff2               vector          [a b c g] coefficients 2 
 %       aM_D2                   matrix          (girl) table of female data
 %
 %       OPTIONAL
 %       astr_title              string          plot title -- any underscores
 %						+ in the title string are 
 %						+ replaced by spaces
-%       astr_xlabel             string          label for x axis
-%       astr_ylabel             string          label for y axis
+%	ab_logPlot		bool		if true, do a log plot
 %
 %       OUTPUT
 %       ret                     bool            true: OK; false: error
@@ -73,6 +71,12 @@ function [ret] = equMyong_plot(av_coeff1, aM_D1, av_coeff2, aM_D2, varargin)
                                 av_coeff(2)*av_X        + ...
                                 av_coeff(3)             + ...
                                 av_coeff(4)*av_G;
+	    if b_logPlot
+               av_Y     =       av_coeff(1)*av_X.*av_X  + ...
+                                av_coeff(2)*log(av_X)   + ...
+                                av_coeff(3)             + ...
+                                av_coeff(4)*av_G;
+            end
         end
 
 %%%%%%%%%%%%%% 
@@ -83,14 +87,14 @@ sys_print('equMyong_plot: START\n');
 
 ret             = 1;
  
+b_logPlot	= 0;
 str_title       = 'Equation plot';
 str_xlabel      = 'age (weeks)';
 str_ylabel      = 'vol (cc)';
 
 % Parse optional arguments
-if length(varargin) >= 1, str_title     = varargin{1};  end
-if length(varargin) >= 2, str_xlabel    = varargin{2};  end
-if length(varargin) >= 3, str_ylabel    = varargin{3};  end
+if length(varargin) >= 1, str_title     = varargin{1};  	end
+if length(varargin) >= 2, b_logPlot     = 1;  		end
 
 
 % process
