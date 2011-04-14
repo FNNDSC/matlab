@@ -1,4 +1,4 @@
-function [str_basename] = basename(str_pathSpec)
+function [str_basename] = sbasename(str_pathSpec)
 %
 % NAME
 %	basename
