@@ -37,15 +37,15 @@ function [] = colprintf(aC, astr_LC, varargin)
             RC          = aC.m_RC;
             verbosity   = aC.m_verbosity;
         else
-            [str_LC, str_RC]    = strtok(aC, '.');
+            [str_LC, str_RC]    = strtok(aC, ';');
             LC                  = str2num(str_LC);
             RC                  = str2num(str_RC);
         end
 
         sfrmt   = sprintf(varargin{:});
-
+        
         if length(astr_LC) & verbosity
-            fprintf(1, '%s', sprintf('%*s',   LC, astr_LC));
+            fprintf(1, '%s', sprintf('%*s', LC, astr_LC));
         end
         if length(sfrmt)   & verbosity
             fprintf(1, '%s', sprintf('%*s', RC, sfrmt));

@@ -92,10 +92,10 @@ str_title       = 'Equation plot';
 str_xlabel      = 'age (weeks)';
 str_ylabel      = 'vol (cc)';
 
-% Parse optional arguments
+% Parse optional argumentss
 if length(varargin) >= 1, str_title     = varargin{1};  	end
-if length(varargin) >= 2, b_logPlot     = 1;  		end
-
+if length(varargin) >= 2, b_logPlot     = varargin{2}; 		end
+if length(varargin) >= 3, str_ylabel    = varargin{3};          end
 
 % process
 M_allData       = [ aM_D1' aM_D2'];
@@ -109,6 +109,13 @@ t               = f_minX-0.1*f_range:0.01:f_maxX+0.1*f_range;
 
 % Display:
 hf              = figure;
+gb		= av_coeff1(4);
+gg		= av_coeff2(4);
+b_gender        = 1;
+if gb == gg && ~gb
+    b_gender    = 0;
+end
+
 plot(aM_D1(:,1), aM_D1(:,2), 'bo', 'MarkerFaceColor', 'b');
 hold on;
 plot(aM_D2(:,1), aM_D2(:,2), 'ro', 'MarkerFaceColor', 'r');
@@ -116,15 +123,20 @@ g1              = 1*aM_D1(1,3);
 g2              = 1*aM_D2(1,3);
 v_f1            = func(av_coeff1, t, g1);
 v_f2            = func(av_coeff2, t, g2);
-plot(t, v_f1, '-b');
-plot(t, v_f2, '-r');
+if b_gender
+    plot(t, v_f1, '-b');
+    plot(t, v_f2, '-r');
+    lh = legend('male', 'female', 'male interpolation', 'female interpolation');
+else
+    plot(t, v_f1, '-g');
+    lh = legend('male', 'female', 'gender independent interpolation');
+end
 
 %  grid;
 str_titlerep	= strrep(str_title, '_', ' ');
 title(str_titlerep);
 xlabel(str_xlabel);
 ylabel(str_ylabel);
-lh = legend('male', 'female', 'male interpolation', 'female interpolation');
 legend('Location', 'NorthWest');
 set(gca, 'Box', 'off');
 set(hf, 'color', 'white');
