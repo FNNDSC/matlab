@@ -77,9 +77,9 @@ for i=1:numel(aM)
 	aM_filt(i)	= aM(i);	
     elseif b_hardLimit
 	if aM(i) < af_lowerThreshold
-	    aM(i)	= af_lowerThreshold;
+	    aM_filt(i)	= af_lowerThreshold;
 	elseif aM(i) > af_upperThreshold
-	    aM(i)	= af_upperThreshold;
+	    aM_filt(i)	= af_upperThreshold;
 	end
     end
 end

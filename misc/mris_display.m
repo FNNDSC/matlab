@@ -6,7 +6,7 @@ function [hf, hp, av_filtered] = mris_display(astr_mris, astr_curv, varargin)
 %                               astr_curv               ...
 %                               <, a_az,                ... 
 %                               a_el,                   ...
-%                               af_bandFilter,          ...
+%                               av_bandFilter,          ...
 %                               ab_invMap>
 %                         )
 %
@@ -20,8 +20,8 @@ function [hf, hp, av_filtered] = mris_display(astr_mris, astr_curv, varargin)
 %       OPTIONAL
 %       a_az            float           azimuth of viewpoint
 %       a_el            float           elevation of viewpoint
-%       af_bandFilter   float           apply a symmetrical band pass filt
-%                                       between +- <af_bandFilter>
+%       av_bandFilter   vector          apply a bandpass filter over data 
+%                                       between vector range.
 %       ab_invMap       bool            if true, invert the sign of the
 %                                       curvature data -- useful if 'neg'
 %                                       values are on gyri and 'pos' values
@@ -86,7 +86,7 @@ az              = 270;
 el              = 0;
 
 b_bandFilter    = 0;
-af_bandFilter   = 1;
+av_bandFilter   = [-1 1];
 b_invCurv       = 0;
 
 % Parse optional arguments
@@ -94,7 +94,7 @@ if length(varargin) >= 1, az = varargin{1};             end
 if length(varargin) >= 2, el = varargin{2};             end
 if length(varargin) >= 3
     b_bandFilter        = 1;
-    af_bandFilter       = varargin{3};
+    av_bandFilter       = varargin{3};
 end
 if length(varargin) >= 4, b_invCurv = varargin{4};      end
 
@@ -128,11 +128,11 @@ v_faces         = int32(v_faces+1);  % for matlab compliance
 
 av_filtered     = [0 0];
 if b_bandFilter
-    lowerCount  = numel(find(v_curv<-af_bandFilter));
-    upperCount  = numel(find(v_curv>af_bandFilter));
+    lowerCount  = numel(find(v_curv<av_bandFilter(1)));
+    upperCount  = numel(find(v_curv>av_bandFilter(2)));
     av_filtered = [lowerCount upperCount];
     v_curv      = filter_bandPass(v_curv,                       ...
-                                -af_bandFilter, af_bandFilter, 1);
+                                 av_bandFilter(1), av_bandFilter(2), 1);
 end
 
 % Display:
@@ -145,7 +145,7 @@ hp              = patch('vertices',     v_vertices,             ...
 axis equal; 
 grid;
 %colormap('winter');
-demcmap(v_curv);
+%demcmap(v_curv);
 title(sprintf('%s: %s', astr_mris, astr_curv));
 colorbar;
 view(az, el);
