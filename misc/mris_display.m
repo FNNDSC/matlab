@@ -1,13 +1,17 @@
-function [hf, hp, av_filtered] = mris_display(astr_mris, astr_curv, varargin)
+function [hf, hp, av_curv, av_filtered] = mris_display( astr_mris, ...
+                                                        astr_curv, ...
+                                                        varargin)
 %
 % NAME
-%       [hf, hp, av_filtered]   =                       ...
+%       [hf, hp, av_curv, av_filtered]   =              ...
 %       mris_display(     	astr_mris,              ... 
 %                               astr_curv               ...
-%                               <, a_az,                ... 
+%                               <, astr_title,          ...
+%                               a_az,                   ...
 %                               a_el,                   ...
-%                               av_bandFilter,          ...
-%                               ab_invMap>
+%                               a_bandFilter,           ...
+%                               ab_invMap,              ...
+%                               astr_colorMap
 %                         )
 %
 %
@@ -18,18 +22,28 @@ function [hf, hp, av_filtered] = mris_display(astr_mris, astr_curv, varargin)
 %       astr_curv       string          filename of curvature file to load
 %
 %       OPTIONAL
+%       astr_title      string          title of plot. If empty string,
+%                                       title will be constructed from
+%                                       surface and curvature file names
 %       a_az            float           azimuth of viewpoint
 %       a_el            float           elevation of viewpoint
-%       av_bandFilter   vector          apply a bandpass filter over data 
+%       a_bandFilter    variable        apply a bandpass filter over data:
+%                                           if vector, defines range
+%                                           if single float, defines
+%                                              symmetrical pulse [-f, +f]
+%                                           if string == 'gz'
+%                                              define range as [>0, max] 
 %                                       between vector range.
 %       ab_invMap       bool            if true, invert the sign of the
 %                                       curvature data -- useful if 'neg'
 %                                       values are on gyri and 'pos' values
 %                                       in sulci.
+%       astr_colorMap   string          colormap override to use.
 %
 %       OUTPUT
 %       hf              handle          handle to generated figure
 %       hp              handle          handle to patch
+%       av_curv         vector          curvature vector
 %       av_filtered     vector          number of vertices in original curv
 %                                       that have been filtered out by the
 %                                       <af_bandFilter>.
@@ -54,6 +68,10 @@ function [hf, hp, av_filtered] = mris_display(astr_mris, astr_curv, varargin)
 % HISTORY
 % 26 August 2009
 % o Initial design and coding.
+% 
+% 02 June 2011
+% o Fixed colormap handling for cases where mapping toolbox is not
+%   available.
 %
 
 % ---------------------------------------------------------
@@ -88,15 +106,22 @@ el              = 0;
 b_bandFilter    = 0;
 av_bandFilter   = [-1 1];
 b_invCurv       = 0;
+b_colorMap      = 0;
+str_colorMap    = 'Jet';
 
 % Parse optional arguments
-if length(varargin) >= 1, az = varargin{1};             end
-if length(varargin) >= 2, el = varargin{2};             end
-if length(varargin) >= 3
+if length(varargin) >= 1, str_title = varargin{1};      end
+if length(varargin) >= 2, az = varargin{2};             end
+if length(varargin) >= 3, el = varargin{3};             end
+if length(varargin) >= 4
     b_bandFilter        = 1;
-    av_bandFilter       = varargin{3};
+    a_bandFilter        = varargin{4};
 end
-if length(varargin) >= 4, b_invCurv = varargin{4};      end
+if length(varargin) >= 5, b_invCurv = varargin{5};      end
+if length(varargin) >= 6
+    b_colorMap          = 1;      
+    str_colorMap        = varargin{6};
+end
 
 % Read curvature file
 cprintsn('Reading curvature file', astr_curv);
@@ -128,11 +153,23 @@ v_faces         = int32(v_faces+1);  % for matlab compliance
 
 av_filtered     = [0 0];
 if b_bandFilter
-    lowerCount  = numel(find(v_curv<av_bandFilter(1)));
-    upperCount  = numel(find(v_curv>av_bandFilter(2)));
+    v_bandFilter        = [min(v_curv) max(v_curv)];
+    if isfloat(a_bandFilter)
+        v_bandFilter    = [-a_bandFilter a_bandFilter];
+    end
+    if isvector(a_bandFilter)
+        v_bandFilter    = a_bandFilter;
+    end
+    if ischar(a_bandFilter)
+        if strcmp(a_bandFilter, 'gz')
+            v_bandFilter = [min(v_curv(find(v_curv>0))) max(v_curv)];
+        end
+    end
+    lowerCount  = numel(find(v_curv<v_bandFilter(1)));
+    upperCount  = numel(find(v_curv>v_bandFilter(2)));
     av_filtered = [lowerCount upperCount];
     v_curv      = filter_bandPass(v_curv,                       ...
-                                 av_bandFilter(1), av_bandFilter(2), 1);
+                                 v_bandFilter(1), v_bandFilter(2), 1);
 end
 
 % Display:
@@ -144,14 +181,27 @@ hp              = patch('vertices',     v_vertices,             ...
                         'facecolor',    'interp'); 
 axis equal; 
 grid;
-%colormap('winter');
-%demcmap(v_curv);
-title(sprintf('%s: %s', astr_mris, astr_curv));
+try
+    demcmap(v_curv);
+catch ME
+    colormap(str_colorMap);
+end
+
+if b_colorMap
+    colormap(str_colorMap);
+end
+
+if length(str_title)
+    title(str_title);
+else
+    title(sprintf('%s: %s', astr_mris, astr_curv));
+end
 colorbar;
 view(az, el);
 
 sys_print('mris_display: END\n');
 
+av_curv = v_curv;
 end
 % ---------------------------------------------------------
 
