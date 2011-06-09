@@ -1,17 +1,7 @@
-function [aC_indicesROI, aC_indicesNROI] =              ...
-                                  mris_circleROI(       ...  
-                                        astr_mrisFile,  ...
-                                        av_center,      ...
-                                        af_radius,      ...
-                                        varargin)
+function [aS_ct] = mris_colorTableMake( a_labelVar, varargin)
 %
 % NAME
-%  function [aC_indicesROI, aC_indicesNROI] =              ...
-%                                    mris_circleROI(       ...  
-%                                          astr_mrisFile,  ...
-%                                          av_center,      ...
-%                                          af_radius      ...
-%                                          [, aS_colorTable, astr_annotFile)
+% function [aS_ct] = mris_colorTableMake( a_labelVar, varargin)
 %
 % $Id:$
 %
@@ -19,91 +9,93 @@ function [aC_indicesROI, aC_indicesNROI] =              ...
 % ARGUMENTS
 %       
 %       INPUT
-%       astr_mrisFile   string          filename of surface file to load
-%       av_center       vector          list of vertex indices about which
-%                                       to determine ROIs.
-%       af_radius       float           radius length
+%       a_labelVar      var             multi-type:
+%                                       + int: number of labels
+%                                       + cstr_labelName: cell list of label
+%                                                         names
 %
 %       OPTIONAL
-%       aS_colorTable   struct          color table
-%       astr_annotFile  string          annotation file name
 %
 %       OUTPUT
-%       aCv_indicesROI  cell            indices within the ROI 
-%       aCv_indicesNROI cell            indices outside the ROI
+%       aS_ct           struct          color table structure
 %
 % DESCRIPTION
 %
-%       'mris_circleROI' accepts a list of vertex points and
-%       generates circular ROIs about each point. The vertex indices
-%       are returned as cell arrays with ROIs and non-ROIs.
+%       'mris_colorTableMake' constructs a color table structure.
 %       
-%       If an optional colortable and output filename are provided,
-%       the ROIs are added to a FreeSurfer annotation file suitable
-%       for uploading onto surfaces.
+%       In the simplest case, its input argument is an integer denoting
+%       the size of the table, in which case the script names labels
+%       'region-1', 'region-2', ... 'region-N'.
 %       
+%       Alternatively, a cell array of strings can be passed, in which
+%       case these are used as label names and also define the size
+%       of the table.
+%              
 % PRECONDITIONS
-%       o <astr_mris> and <aS_colorTable> should be valid.
 %       o FreeSurfer environment.
 %
 % POSTCONDITIONS
-%       o Vertex indices are returned and optional annotation file
-%         is created.
+%       o FreeSurfer colortable struct is returned.
 %         
 % SEE ALSO
 %       o read_annotation / write_annotation for a description of the
 %         color table format.
 %
 % HISTORY
-% 06 June 2011
+% 07 June 2011
 % o Initial design and coding.
 %
 
 % ---------------------------------------------------------
 
-sys_printf('mris_circleROI: START\n');
+sys_printf('mris_colorTableMake: START\n');
  
 
-b_annotate      = 0;
 % Parse optional arguments
-if length(varargin) == 2, 
-    b_annotate          = 1;
-    S_ct                = varargin{1};
-    str_annotationFile  = varargin{2};
+
+% Determine the table size
+b_labelNames    = 0;
+if (isfloat(a_labelVar))
+    tableSize   = int32(a_labelVar);
+end
+if (iscell(a_labelVar))
+    tableSize   = numel(a_labelVar);
+    b_labelNames = 1;
 end
 
-% Read surface
-colprintf('40;40', 'Reading mris file', '[ %s ]\n', astr_mrisFile);
-[v_vertices, v_faces] = read_surf(astr_mrisFile);
-v_vertSize      = size(v_vertices);
-v_faceSize      = size(v_faces);
-str_vertSize    = sprintf('%d x %d', v_vertSize(1), v_vertSize(2));
-str_faceSize    = sprintf('%d x %d', v_faceSize(1), v_faceSize(2));
-colprintf('40;40', 'Size of vert struct', '[ %s ]\n', str_vertSize);
-colprintf('40;40', 'Size of face struct', '[ %s ]\n', str_faceSize);
+% Build the color table using permutations in the [256 256 256] space
+dimension       = 0;
+rows            = 0;
+while rows < tableSize
+    dimension   = dimension + 1;
+    [I, D]      = permutations_find(3, dimension, [128 128 128]);
+    [rows cols] = size(I{dimension});
+end
 
-numROIcenters   = numel(av_center)
+M_RGBfull       = int32(normalize(I{dimension})*256);
+% Skip the first _RGBfull entry which is [ 0 0 0 ]
+M_RGB           = M_RGBfull(2:tableSize+1, :);
 
-if numROIcenters
-    aC_indicesROI       = cell(1, numROIcenters)
-    ac_indicesNROI      = cell(1, numROIcenters)
-    for vi = 1:length(v_vertices)
-        for ROI=1:numROIcenters
-            v_ROIcenter = v_vertices(av_center(ROI), :);
-            f_dist      = norm(v_vertices(vi, :) - v_ROIcenter);
-            if (dist < af_radius)
-                ac_indicesROI{ROI}
-            end
-        end
+v_index         = [1:tableSize];
+M_ct            = double([M_RGB zeros(tableSize, 1) v_index']);
+
+% Label names
+if (~b_labelNames)
+    Cstr_labelName = cell(tableSize, 1);
+    for i=1:tableSize
+        Cstr_labelName{i}       = sprintf('region-%d', i);
     end
+else
+    Cstr_labelName              = a_labelVar;
 end
 
+aS_ct                   = struct;
+aS_ct.numEntries        = tableSize;
+aS_ct.orig_tab          = 'none';
+aS_ct.struct_names      = Cstr_labelName;
+aS_ct.table             = M_ct;
 
-colprintf('40;40', 'Writing label', '');
-write_label(v_index, av_vertices, v_labelVals, astr_labelFile);
-colprintf('40;40', '', '[ %s ]\n', astr_labelFile);
-
-sys_printf('mris_circleROI: END\n');
+sys_printf('mris_colorTableMake: END\n');
 
 end
 % ---------------------------------------------------------

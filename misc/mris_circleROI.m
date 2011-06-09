@@ -10,8 +10,9 @@ function [aC_indicesROI, aC_indicesNROI] =              ...
 %                                    mris_circleROI(       ...  
 %                                          astr_mrisFile,  ...
 %                                          av_center,      ...
-%                                          af_radius      ...
-%                                          [, aS_colorTable, astr_annotFile)
+%                                          af_radius       ...
+%                                          [, astr_annotFile)
+%                                          [, aS_colorTable]])
 %
 % $Id:$
 %
@@ -25,8 +26,8 @@ function [aC_indicesROI, aC_indicesNROI] =              ...
 %       af_radius       float           radius length
 %
 %       OPTIONAL
-%       aS_colorTable   struct          color table
 %       astr_annotFile  string          annotation file name
+%       aS_colorTable   struct          color table
 %
 %       OUTPUT
 %       aCv_indicesROI  cell            indices within the ROI 
@@ -38,9 +39,11 @@ function [aC_indicesROI, aC_indicesNROI] =              ...
 %       generates circular ROIs about each point. The vertex indices
 %       are returned as cell arrays with ROIs and non-ROIs.
 %       
-%       If an optional colortable and output filename are provided,
+%       If an optional annotation output filename is provided,
 %       the ROIs are added to a FreeSurfer annotation file suitable
-%       for uploading onto surfaces.
+%       for uploading onto surfaces. If a color table structure is
+%       passed, this is used for the annotation, otherwise a
+%       color table is created (or attempted).
 %       
 % PRECONDITIONS
 %       o <astr_mris> and <aS_colorTable> should be valid.
@@ -65,12 +68,17 @@ sys_printf('mris_circleROI: START\n');
  
 
 b_annotate      = 0;
+b_colorTable    = 0;
 % Parse optional arguments
-if length(varargin) == 2, 
+if length(varargin) >=1
     b_annotate          = 1;
-    S_ct                = varargin{1};
-    str_annotationFile  = varargin{2};
+    str_annotationFile  = varargin{1};
 end
+if length(varargin) >=2
+    b_colorTable        = 1;
+    S_ct                = varargin{2};
+end
+
 
 % Read surface
 colprintf('40;40', 'Reading mris file', '[ %s ]\n', astr_mrisFile);
@@ -82,22 +90,28 @@ str_faceSize    = sprintf('%d x %d', v_faceSize(1), v_faceSize(2));
 colprintf('40;40', 'Size of vert struct', '[ %s ]\n', str_vertSize);
 colprintf('40;40', 'Size of face struct', '[ %s ]\n', str_faceSize);
 
-numROIcenters   = numel(av_center)
+numROIcenters   = numel(av_center);
 
 if numROIcenters
-    aC_indicesROI       = cell(1, numROIcenters)
-    ac_indicesNROI      = cell(1, numROIcenters)
+    aC_indicesROI       = cell(1, numROIcenters);
+    aC_indicesNROI      = cell(1, numROIcenters);
+    aC_tracker          = cell(1, numROIcenters);
     for vi = 1:length(v_vertices)
         for ROI=1:numROIcenters
-            v_ROIcenter = v_vertices(av_center(ROI), :);
+            vi
+            v_ROIcenter = v_vertices(av_center(ROI), :)
+            v_vertices(vi, :)
             f_dist      = norm(v_vertices(vi, :) - v_ROIcenter);
             if (dist < af_radius)
-                ac_indicesROI{ROI}
+                aC_tracker{ROI}(vi)     = 1;
+                aC_indicesROI{ROI}      = [ aC_indicesROI{ROI} vi];
+            else
+                aC_tracker{ROI}(vi)     = 0;
+                aC_indicesNROI{ROI}     = [ aC_indicesNROI{ROI} vi];
             end
         end
     end
 end
-
 
 colprintf('40;40', 'Writing label', '');
 write_label(v_index, av_vertices, v_labelVals, astr_labelFile);
