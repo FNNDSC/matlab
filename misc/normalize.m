@@ -1,4 +1,4 @@
-function [V] = normalize(a_V, varargin)
+function [V] = V_normalize(a_V, varargin)
 %
 % [V] = normalize(a_V [, lowerBound [, upperBound]])
 %
