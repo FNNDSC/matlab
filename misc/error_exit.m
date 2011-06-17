@@ -54,5 +54,5 @@ fprintf([ fmt '\n'], sprintf('Sorry, some error has occurred.'));
 fprintf([ fmt '\n'], sprintf('While %s,', str_action));
 fprintf([ fmt '\n'], sprintf('%s', str_message));
 fprintf([ fmt '\n'], sprintf('\n\nError code: %s', str_ret));
-error(str_ret);
+error(sprintf('%s:%s', 'err', str_ret));
 

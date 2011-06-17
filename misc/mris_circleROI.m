@@ -1,18 +1,21 @@
-function [aC_indicesROI, aC_indicesNROI] =              ...
-                                  mris_circleROI(       ...  
-                                        astr_mrisFile,  ...
-                                        av_center,      ...
-                                        af_radius,      ...
+function [aCv_indicesROI, aCv_indicesNROI, aCv_tracker, aS_ct] =        ...
+                                  mris_circleROI(                       ...
+                                        astr_hemi,                      ...
+                                        astr_mrisFile,                  ...
+                                        av_center,                      ...
+                                        af_radius,                      ...
                                         varargin)
 %
 % NAME
-%  function [aC_indicesROI, aC_indicesNROI] =              ...
-%                                    mris_circleROI(       ...  
-%                                          astr_mrisFile,  ...
-%                                          av_center,      ...
-%                                          af_radius       ...
-%                                          [, astr_annotFile)
-%                                          [, aS_colorTable]])
+%  function [aCv_indicesROI, aCv_indicesNROI, aCv_tracker, aS_ct] =     ...
+%                                    mris_circleROI(                    ...
+%                                          astr_hemi,                   ...  
+%                                          astr_mrisFile,               ...
+%                                          av_center,                   ...
+%                                          af_radius                    ...
+%                                          [, astr_annotFile            ...
+%                                          [, astr_labelStem,           ...
+%                                          [, ab_progress]]])
 %
 % $Id:$
 %
@@ -20,18 +23,30 @@ function [aC_indicesROI, aC_indicesNROI] =              ...
 % ARGUMENTS
 %       
 %       INPUT
+%       astr_hemi       string          hemisphere to process
 %       astr_mrisFile   string          filename of surface file to load
+%                                       + (w/o hemisphere string)
 %       av_center       vector          list of vertex indices about which
 %                                       to determine ROIs.
 %       af_radius       float           radius length
 %
 %       OPTIONAL
 %       astr_annotFile  string          annotation file name
-%       aS_colorTable   struct          color table
+%                                       + (w/o hemisphere string)
+%       astr_labelStem  string          stem to use for the label files
+%       ab_progress     bool            if true, show running progress
 %
 %       OUTPUT
 %       aCv_indicesROI  cell            indices within the ROI 
 %       aCv_indicesNROI cell            indices outside the ROI
+%       aCv_tracker     cell            indices across whole vertex space:
+%                                       + 1 indicates corresponding vertex
+%                                       +   index is in the ROI;
+%                                       + 0 indicates corresponding vertex
+%                                       +   index in in the NROI       
+%       aS_ct           struct          color table structure that was
+%                                       written to file. If no annotation
+%                                       was created, this is empty.
 %
 % DESCRIPTION
 %
@@ -60,25 +75,31 @@ function [aC_indicesROI, aC_indicesNROI] =              ...
 % HISTORY
 % 06 June 2011
 % o Initial design and coding.
+%   WARNING! Passing external colorTable is not fully supported yet!
 %
 
 % ---------------------------------------------------------
 
 sys_printf('mris_circleROI: START\n');
  
-
+aS_ct           = struct;
 b_annotate      = 0;
 b_colorTable    = 0;
+b_progress      = 0;
+str_labelStem   = '';
 % Parse optional arguments
-if length(varargin) >=1
+if length(varargin) >=1 && length(varargin{1})
     b_annotate          = 1;
-    str_annotationFile  = varargin{1};
+    str_annotationFile  = [astr_hemi '.' varargin{1}];
 end
-if length(varargin) >=2
-    b_colorTable        = 1;
-    S_ct                = varargin{2};
+if length(varargin) >=2 && length(varargin{2})
+    str_labelStem       = varargin{2};
+end
+if length(varargin) >=3 && length(varargin{3})
+    b_progress          = varargin{3};
 end
 
+astr_mrisFile   = [astr_hemi '.' astr_mrisFile];
 
 % Read surface
 colprintf('40;40', 'Reading mris file', '[ %s ]\n', astr_mrisFile);
@@ -93,29 +114,71 @@ colprintf('40;40', 'Size of face struct', '[ %s ]\n', str_faceSize);
 numROIcenters   = numel(av_center);
 
 if numROIcenters
-    aC_indicesROI       = cell(1, numROIcenters);
-    aC_indicesNROI      = cell(1, numROIcenters);
-    aC_tracker          = cell(1, numROIcenters);
+    aCv_indicesROI      = cell(1, numROIcenters);
+    aCv_indicesNROI     = cell(1, numROIcenters);
+    aCv_tracker         = cell(1, numROIcenters);
+    for ROI=1:numROIcenters
+        aCv_tracker{ROI} = zeros(1, v_vertSize(1));
+    end
+    if ~b_progress
+        colprintf('40;40', 'Processing vertices...', '');
+    end
     for vi = 1:length(v_vertices)
+        if b_progress
+            colprintf('40;40', 'Vertex process count', '[ %6d (%3.2f%s) ]\r', ... 
+                    vi, vi/v_vertSize(1)*100, '%');
+        end
         for ROI=1:numROIcenters
-            vi
-            v_ROIcenter = v_vertices(av_center(ROI), :)
-            v_vertices(vi, :)
+            v_ROIcenter = v_vertices(av_center(ROI), :);
+            v_vertices(vi, :);
             f_dist      = norm(v_vertices(vi, :) - v_ROIcenter);
-            if (dist < af_radius)
-                aC_tracker{ROI}(vi)     = 1;
-                aC_indicesROI{ROI}      = [ aC_indicesROI{ROI} vi];
+            if (f_dist < af_radius)
+                aCv_tracker{ROI}(vi)    = 1;
+                aCv_indicesROI{ROI}     = [ aCv_indicesROI{ROI} vi];
             else
-                aC_tracker{ROI}(vi)     = 0;
-                aC_indicesNROI{ROI}     = [ aC_indicesNROI{ROI} vi];
+                aCv_tracker{ROI}(vi)    = 0;
+                aCv_indicesNROI{ROI}    = [ aCv_indicesNROI{ROI} vi];
             end
         end
     end
+    if ~b_progress
+        colprintf('40;40', '', '[ done ]');
+    end
 end
 
-colprintf('40;40', 'Writing label', '');
-write_label(v_index, av_vertices, v_labelVals, astr_labelFile);
-colprintf('40;40', '', '[ %s ]\n', astr_labelFile);
+fprintf('\n');
+if b_annotate
+    b_useUnknownLabel   = 0;
+    if ~b_colorTable
+        b_useUnknownLabel = 1;
+        S_ct    = mris_colorTableMake(numROIcenters, b_useUnknownLabel);
+    end
+    v_annotV    = [0:v_vertSize(1)-1];
+    v_elementID = zeros(1, v_vertSize(1));
+    for ROI=1:numROIcenters
+        label   = S_ct.table(ROI+b_useUnknownLabel, 5);
+        colprintf('40;40', 'Annotating ROI:lookup     ', '');
+        v_elementID(aCv_indicesROI{ROI}) = label;
+        colprintf('40;40', '', '[ %d:%d ]\n', ROI, label);
+        str_hemi        = basename(strtok(str_annotationFile, '-'));
+        str_labelFile   = sprintf('%s/%s_%s%s.label',                   ...
+                                dirname(str_annotationFile),            ...
+                                astr_hemi,                              ...
+                                str_labelStem,                          ...
+                                S_ct.struct_names{ROI+b_useUnknownLabel});
+        colprintf('40;40', 'Writing label file', '');
+        v_verticesLabel = v_vertices(aCv_indicesROI{ROI},:);
+        v_labelVals     = zeros(length(aCv_indicesROI{ROI}),1);
+        write_label(aCv_indicesROI{ROI}'-1, v_verticesLabel, v_labelVals,   ...
+                    str_labelFile);
+        colprintf('40;40', '', '[ %s ]\n', str_labelFile);
+        colprintf('40;40', 'Label elements', '[ %d ]\n', numel(v_labelVals));
+    end
+    colprintf('40;40', 'Writing annotation file', '');
+    write_annotation(str_annotationFile, v_annotV, v_elementID, S_ct);
+    colprintf('40;40', '', '[ %s ]\n', str_annotationFile);
+    aS_ct       = S_ct;
+end
 
 sys_printf('mris_circleROI: END\n');
 

@@ -24,7 +24,11 @@ function [hf, hp, av_curv, av_filtered] = mris_display( astr_mris, ...
 %       OPTIONAL
 %       astr_title      string          title of plot. If empty string,
 %                                       title will be constructed from
-%                                       surface and curvature file names
+%                                       surface and curvature file names.
+%                                       If title string starts with "save:"
+%                                       then the graph is also saved to
+%                                       filesystem using the title string
+%                                       as a filestem.
 %       a_az            float           azimuth of viewpoint
 %       a_el            float           elevation of viewpoint
 %       a_bandFilter    variable        apply a bandpass filter over data:
@@ -124,6 +128,14 @@ if length(varargin) >= 6
     str_colorMap        = varargin{6};
 end
 
+% Parse title string for 'save:' directive
+b_save			= 0;
+c_title			= regexp(str_title, 'save:', 'split');
+if numel(c_title) == 2
+    b_save		= 1;
+    str_title		= c_title{2};
+end
+
 % Read curvature file
 colprintf('40;40', 'Reading curvature file', '[ %s ]\n', astr_curv);
 [v_curv, fnum] = read_curv(astr_curv);
@@ -154,7 +166,7 @@ if b_bandFilter
     if isfloat(a_bandFilter)
         v_bandFilter    = [-a_bandFilter a_bandFilter];
     end
-    if isvector(a_bandFilter)
+    if isvector(a_bandFilter) & numel(a_bandFilter) == 2
         v_bandFilter    = a_bandFilter;
     end
     if ischar(a_bandFilter)
@@ -208,6 +220,17 @@ else
 end
 colorbar;
 view(az, el);
+
+if b_save
+    str_epsFile	= [ str_title '.eps' ];
+    str_pngFile	= [ str_title '.png' ];
+    colprintf('40;40', 'Saving eps snapshot', '');
+    print('-depsc2', str_epsFile);
+    colprintf('40;40', '', '[ %s ]\n', str_epsFile);
+    colprintf('40;40', 'Saving png snapshot', '');
+    print('-dpng', str_pngFile);
+    colprintf('40;40', '', '[ %s ]\n', str_pngFile);
+end
 
 sys_print('mris_display: END\n');
 
