@@ -1,0 +1,3 @@
+c = cortParc();
+c = set(c, 'flags', 4)
+c = run(c)
