@@ -1,18 +1,18 @@
 function [num_r] = b10_convertFrom(num_10, radix, forcelength)
-%//
-%// ARGS
-%//     num_10          in      number in base 10
-%//     radix		    in      radix to convert to
-%//     forcelength     in      if nonzero, indicates the length
-%//                                 of the returned vector
-%//
-%// DESC
-%//     Converts a scalar from base 10 to base radix. Return
-%//     is a "vector".
-%//
-%// HISTORY
-%// 21 September 2001
-%// o Added forcelength;
+%
+% ARGS
+%     num_10          in      number in base 10
+%     radix		    in      radix to convert to
+%     forcelength     in      if nonzero, indicates the length
+%                                 of the returned vector
+%
+% DESC
+%     Converts a scalar from base 10 to base radix. Return
+%     is a "vector".
+%
+% HISTORY
+% 21 September 2001
+% o Added forcelength;
 
 i = 0;
 k = 1;
