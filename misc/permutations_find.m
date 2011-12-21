@@ -1,7 +1,7 @@
-function [I, D] = neighbours_findFast(a_dimension, a_depth, varargin)
+function [I, D] = permutations_find(a_dimension, a_depth, varargin)
 %
 % SYNOPSIS
-%      [I, D] = neighbours_findFast(a_dimension, a_depth)
+%      [I, D] = permutations_find(a_dimension, a_depth)
 %
 % ARGS
 % 
@@ -135,7 +135,7 @@ if b_rowOffset
         [rowsD colsD]   = size(D{layer});
         M_OI            = repmat(v_rowOffset, rowsI, 1);
         M_OD            = repmat(v_rowOffset, rowsD, 1);
-        I{layer}        = I{layer} .* M_OI + M_OI;
-        D{layer}        = D{layer} .* M_OD + M_OD;
+        I{layer}        = I{layer} + M_OI;
+        D{layer}        = D{layer} + M_OD;
     end
 end

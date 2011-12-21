@@ -18,10 +18,10 @@ function [num_r] = b10_convertFrom(num_10, radix, varargin)
 
 i = 0;
 k = 1;
-forcelength = 0
+forcelength = 0;
 
 if length(varargin)
-    forcelength = varargin{1}
+    forcelength = varargin{1};
 end
     
 % Cycle up in powers of radix until the largest exponent is found.
