@@ -1,7 +1,7 @@
 function [I, D] = permutations_find(a_dimension, a_depth, varargin)
 %
 % SYNOPSIS
-%      [I, D] = permutations_find(a_dimension, a_depth)
+%      [I, D] = permutations_find(a_dimension, a_depth <,av_origin>)
 %
 % ARGS
 % 
@@ -10,11 +10,12 @@ function [I, D] = permutations_find(a_dimension, a_depth, varargin)
 %   a_depth             int32           depth of neighbours to find
 %
 %   OPTIONAL
-%   av_row              vector          row vector that is optionally
-%                                       added to each I and D row. This
-%                                       is useful for expressing a 
-%                                       permutation in terms of an
-%                                       actual offset baseline vector.
+%   av_origin           vector          row vector that defines the
+%                                       + origin in the <a_dimension>  
+%                                       + space. Neighbours' locations
+%                                       + are returned relative to this
+%                                       + origin. Default is the zero
+%                                       + origin.
 %   
 %   OUTPUT
 %   I                   cell           a cell array containing "indirect"
@@ -62,7 +63,7 @@ function [I, D] = permutations_find(a_dimension, a_depth, varargin)
 %   explicitly allocating structures, etc.
 %
 % 06 June 2010
-% o Resurrected with av_row option.
+% o Resurrected with av_origin option.
 % 
 
 if (a_depth<1)
@@ -76,13 +77,13 @@ D = cell(1, a_depth);
 I = cell(1, a_depth);
 
 % Create data structures
-v_rowOffset     = zeros(1, a_dimension);
-b_rowOffset     = 0;
+v_origin        = zeros(1, a_dimension);
+b_origin        = 0;
 if length(varargin)
-    av_rowOffset= varargin{1};
-    if isrow(av_rowOffset) && numel(av_rowOffset)==a_dimension
-        v_rowOffset     = av_rowOffset;
-        b_rowOffset     = 1;
+    av_origin   = varargin{1};
+    if isrow(av_origin) && numel(av_origin)==a_dimension
+        v_origin        = av_origin;
+        b_origin        = 1;
     end
 end
 d               = 1;
@@ -129,12 +130,12 @@ end
 
 fprintf('\n');
 
-if b_rowOffset
+if b_origin
     for layer=1:neighbour
         [rowsI colsI]   = size(I{layer});
         [rowsD colsD]   = size(D{layer});
-        M_OI            = repmat(v_rowOffset, rowsI, 1);
-        M_OD            = repmat(v_rowOffset, rowsD, 1);
+        M_OI            = repmat(v_origin, rowsI, 1);
+        M_OD            = repmat(v_origin, rowsD, 1);
         I{layer}        = I{layer} + M_OI;
         D{layer}        = D{layer} + M_OD;
     end
