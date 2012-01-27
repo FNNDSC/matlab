@@ -72,9 +72,16 @@ c.stats_ASLnormF = vol_stats(c.mVn_ASL, vol_binarize(c.mV_ASLfilt));
 if c.stats_ASLnormF.m_size ~= c.m_ASLroiVoxels+1
     error_exit(c, 'ASLroi', 'vol_stats did not return same size ASLroiVoxels');
 end
-c.stats_ASLorigF  = vol_stats(c.mV_ASLB0, vol_binarize(c.mV_ASLfilt));
-c.stats_ASLnormNF = vol_stats(c.mVn_ASL,  c.mV_B0 - vol_binarize(c.mV_ASLfilt));
-c.stats_ASLorigNF = vol_stats(c.mV_ASLB0, c.mV_B0 - vol_binarize(c.mV_ASLfilt));
+
+if c.mb_filterOnRawROI
+    V_filterMask      = vol_binarize(c.mV_ASLroi);
+else
+    V_filterMask      = vol_binarize(c.mV_ASLfilt);
+end
+V_nonFilterMask   = vol_binarize(c.mV_B0) - V_filterMask;
+c.stats_ASLorigF  = vol_stats(c.mV_ASLB0, V_filterMask);
+c.stats_ASLnormNF = vol_stats(c.mVn_ASL,  V_nonFilterMask);
+c.stats_ASLorigNF = vol_stats(c.mV_ASLB0, V_nonFilterMask);
 cprintsn('ASL stats calculated', ' [ ok ]');
 
 c.stats_ADCnormF = vol_stats(c.mVn_ADC, vol_binarize(c.mV_ADCfilt));
@@ -82,11 +89,17 @@ if c.stats_ADCnormF.m_size ~= c.m_ADCroiVoxels+1
     error_exit(c, 'ADCroi', 'vol_stats did not return same size ADCroiVoxels');
 end
 
+if c.mb_filterOnRawROI
+    V_filterMask      = vol_binarize(c.mV_ADCroi);
+else
+    V_filterMask      = vol_binarize(c.mV_ADCfilt);
+end
 V_filterMask      = vol_binarize(c.mV_ADCfilt);
 V_nonFilterMask   = vol_binarize(c.mV_B0) - V_filterMask - vol_binarize(c.mV_ADCroiCSF);
 c.stats_ADCorigF  = vol_stats(c.mV_ADCB0, V_filterMask);
 c.stats_ADCnormNF = vol_stats(c.mVn_ADC,  V_nonFilterMask);
 c.stats_ADCorigNF = vol_stats(c.mV_ADCB0, V_nonFilterMask);
+
 cprintsn('ADC stats calculated', ' [ ok ]');
 
 sys_print('| ADC/ASL ROI volume and stats measures - END\n');

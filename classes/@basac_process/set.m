@@ -86,6 +86,8 @@ while length(propertyArgIn) >= 2,
         c.mM_kernelASL                  = [ val val ];
     case        'kernelADC'
         c.mM_kernelADC                  = [ val val ];
+    case        'filterOnRawROI'
+        c.mb_filterOnRawROI             = val;
 
    otherwise
         error('basac_process:Properties:set error');

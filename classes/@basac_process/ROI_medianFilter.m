@@ -34,6 +34,9 @@ function c = ROI_medianFilter(c, varargin)
 % 16 December 2008
 % o Initial design and coding.
 %
+% 02 March 2010
+% o b_filterOnRawROI incorporated.
+%
 
 c.mstack_proc 	= push(c.mstack_proc, 'ROI_medianFilter');
 
@@ -45,13 +48,19 @@ if c.mb_ADCsuppressCSF
     cprintsn('', '[ ok ]');
 end
 
-cprints('Filtering ADC...', '');
-c.mV_ADCfilt    = vol_medfilt2(c.mV_ADCroi, c.mM_kernelADC); 
-cprintsn('', '[ ok ]');
+if ~c.mb_filterOnRawROI
+    cprints('Filtering ADC...', '');
+    c.mV_ADCfilt    = vol_medfilt2(c.mV_ADCroi, c.mM_kernelADC);
+    cprintsn('', '[ ok ]');
 
-cprints('Filtering ASL...', '');
-c.mV_ASLfilt    = vol_medfilt2(c.mV_ASLroi, c.mM_kernelASL);
-cprintsn('', '[ ok ]');
+    cprints('Filtering ASL...', '');
+    c.mV_ASLfilt    = vol_medfilt2(c.mV_ASLroi, c.mM_kernelASL);
+    cprintsn('', '[ ok ]');
+else
+    cprintsn('Override on RAW ROI specified', '[ ok ]');
+    c.mV_ADCfilt    = c.mV_ADCroi;
+    c.mV_ASLfilt    = c.mV_ASLroi;
+end
 
 cprints('Volume vectorizing ADC...', '');
 c.mv_ADCfilt    = vol_vectorize(c.mV_ADCfilt, c.mV_B0);
@@ -61,7 +70,6 @@ cprints('Volume vectorizing ASL...', '');
 c.mv_ASLfilt    = vol_vectorize(c.mV_ASLfilt, c.mV_B0);
 cprintsn('', '[ ok ]');
 
-% Binarize the filt volumes?
 sys_print('| Median volume filtering - END\n');
 
 [c.mstack_proc, element] = pop(c.mstack_proc);

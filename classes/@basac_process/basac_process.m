@@ -151,29 +151,15 @@ c.mf_meanMaskTolerance		= 0.001;	% If the ROIfilterCount is set
 						%+ that the loop is internally
 						%+ hard limited if there is
 						%+ no convergence.
-
-c.mb_binarizeMasks		= 1;		% Boolean flag: if true, 
-						%+ binarize the ASL and ADC 
-						%+ filter masks. This improves
-						%+ inter-subject comparisons 
-						%+ since volume intensities are
-						%+ reduced to 1 and 0.
-
 c.mV_correlation                = [];           % Correlation volume
 c.mv_maxCorrelationPerSlice     = [];           % Correlation vector containing
                                                 %+ the maximum correlation
                                                 %+ value for each slice in the
                                                 %+ correlation volume
-c.mb_registrationPenalize	= 1;		% Boolean flag for penalizing
-						%+ "bad" registrations.
 c.mstr_registrationPenalizeFunc	= 'sigmoid';	% Choices are either 'sigmoid'
 						%+ or 'linear'.
 c.mv_registrationOffset		= [];		% Registration error fraction
 						%+ for correlated slices.
-c.mb_pulseFiter                 = 1;            % Control flag for applying
-                                                %+ pulse filter on the 
-                                                %+ max correlation per slice
-                                                %+ vector.
 c.mv_maxCorrelationPerSliceR    = [];           % Raw max correlation per slice
 c.mv_maxCorrelationPerSliceW	= [];		% Correlation weighed by
 						%+ inverted fractional distance 
@@ -199,7 +185,24 @@ c.mb_showScatter                = 1;            % Show scatter plot
 c.mb_showMaxCorrelation         = 1;            % Show max correlation vector
 c.mb_imagesSave			= 0;		% If TRUE, save a set of
 						% jpg images 
-
+c.mb_binarizeMasks              = 1;            % Boolean flag: if true,
+                                                %+ binarize the ASL and ADC
+                                                %+ filter masks. This improves
+                                                %+ inter-subject comparisons
+                                                %+ since volume intensities are
+                                                %+ reduced to 1 and 0.
+c.mb_registrationPenalize       = 1;            % Boolean flag for penalizing
+                                                %+ "bad" registrations.
+c.mb_pulseFiter                 = 1;            % Control flag for applying
+                                                %+ pulse filter on the
+                                                %+ max correlation per slice
+                                                %+ vector.
+c.mb_filterOnRawROI             = 0;            % If TRUE, filter ASL and ADC
+                                                %+ volumes on initial ROI 
+                                                %+ selection and not the 
+                                                %+ smoothed filter. Used by
+                                                %+ the ROI_volsMeasure
+                                                %+ method.
 %
 % Source data info
 % The 'Base' directories are fixed relative to a given SUBJECTS_DIR
