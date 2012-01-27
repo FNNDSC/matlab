@@ -3,7 +3,7 @@ function C =	curvature_analyze(varargin)
 % NAME
 %
 %  function C =	curvature_analyze()
-%       $Id$
+%       $Id: curvature_analyze.m 469 2011-06-15 19:34:06Z rudolphpienaar $
 %
 % ARGUMENTS
 % INPUT

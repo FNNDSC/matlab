@@ -93,7 +93,13 @@ for subjIndex = 1:numel(c_dirLst)
         str_label                       = fscanf(fid_subj, '%s');
         fclose(fid_subj);
     else
-        fid_subj        = fopen(str_subjLabelFile, 'w');
+        try
+            fid_subj    = fopen(str_subjLabelFile, 'w');
+        catch ME
+	    error_exit(c, 	...
+    'err:1', 'Unable to access file:\n%s\n. Possible permission problem?', ...
+			str_subjLabelFile);
+	end
         fprintf(fid_subj, '%s', str_label);
         fclose(fid_subj);
     end
