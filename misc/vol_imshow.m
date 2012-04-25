@@ -1,6 +1,6 @@
 function [V] = vol_normalizeSlice(a_V, varargin)
 %
-% [V] = vol_imshow(a_V [, a_plane])
+% [V] = vol_imshow(a_V [, a_startSlice [, a_plane [, astr_fileStem]]])
 %
 % ARGS
 % INPUT
@@ -9,9 +9,15 @@ function [V] = vol_normalizeSlice(a_V, varargin)
 % OPTIONAL
 % a_startSlice		scalar			slice to start display
 % a_plane               scalar                  plane to view:
-%                                               1 - row
-%                                               2 - column
-%                                               3 - slice
+%                                               	1 - row
+%                                               	2 - column
+%                                               	3 - slice
+% astr_fileStem		string			in conjunction with
+% 						a slice and plane, save
+%						the current image  to
+%						<astr_fileStem>.eps
+%						<astr_fileStem>.png
+%						and exit immediately.
 % 
 % DESC
 % Runs imshow on extracted slices in a volume. Pauses for user keystroke
@@ -47,12 +53,19 @@ function [V] = vol_normalizeSlice(a_V, varargin)
 
 plane 		= 3;
 b_userSlice	= 0;
+b_saveImage	= 0;
 
 if length(varargin)>=1
     slice   	= varargin{1}; 
     b_userSlice	= 1;
 end
 if length(varargin)>=2;	plane   = varargin{2}; end
+if length(varargin)>=3
+  b_saveImage	= 1;
+  str_fileStem	= varargin{3};
+  str_epsFile	= sprintf('%s.eps', str_fileStem);
+  str_pngFile	= sprintf('%s.png', str_fileStem);
+end
 
 sz = size(a_V);
 if length(sz) ~= 3
@@ -67,7 +80,6 @@ if ~b_userSlice
     slice	= round(sz(plane)/2);
 end
 while 1==1
-%  for slice   = 1:sz(plane)
     if slice < 1 ;              slice = sliceMax ;      end
     if slice > sliceMax ;       slice = 1 ;             end
     switch plane
@@ -79,7 +91,11 @@ while 1==1
         M       = squeeze(a_V(:,:,slice));
     end
     imshow(M, 'InitialMagnification', 'fit');
-%      w = waitforbuttonpress;
+    if(b_saveImage)
+      print('-dpng', 	str_pngFile);
+      print('-depsc2',	str_epsFile);
+      break;
+    end
     try
       [x, y, button]      = ginput(1);
     catch ME
