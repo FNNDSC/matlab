@@ -1,5 +1,5 @@
-function [] = ADCASL_stats(astr_ADCsubj, astr_ASLsubj, astr_ADCASLcontrol, ...
-                                varargin)
+function [] = ADCASL_stats(astr_ADCsubj, astr_ASLsubj, ...
+                           astr_ADCASLcontrol, varargin)
 %
 % NAME
 %
@@ -10,12 +10,12 @@ function [] = ADCASL_stats(astr_ADCsubj, astr_ASLsubj, astr_ADCASLcontrol, ...
 %
 % ARGUMENTS
 % INPUT
-%	astr_ADCsubj            string          ROI filename for subj ADC
-%	astr_ASLsubj            string          ROI filename for subj ASL
-%	astr_ADCASLcontrol      string          ROI filename for control ADC,ASL
+%  astr_ADCsubj            string          ROI filename for subj ADC
+%  astr_ASLsubj            string          ROI filename for subj ASL
+%  astr_ADCASLcontrol      string          ROI filename for control ADC,ASL
 %
 % OPTIONAL INPUT
-%       astr_type               string          one of 'mean', 'var', 'varperc'
+%  astr_type               string          one of 'mean', 'var', 'varperc'
 %
 % DESCRIPTION
 %
@@ -30,6 +30,9 @@ function [] = ADCASL_stats(astr_ADCsubj, astr_ASLsubj, astr_ADCASLcontrol, ...
 % HISTORY
 % 02 March 2011
 % o Initial design and coding.
+%
+% 13 February 2012
+% o Fixed for unequal sized comparison populations.
 %
 
 % defaults
@@ -56,14 +59,15 @@ v_normASL       = M_norm(:, 2);
 
 % Perform the t-tests
 
-cM_test         = {                                             ...
-                        [ v_subjADCroi  v_subjADCnroi ],        ...
-                        [ v_subjADCroi  v_normADC],             ...
-                        [ v_subjADCnroi v_normADC],             ...
-                        [ v_subjASLroi  v_subjASLnroi],         ...
-                        [ v_subjASLroi  v_normASL],             ...
-                        [ v_subjASLnroi v_normASL]              ...
-                };
+c_test          = {
+                        {v_subjADCroi,  v_subjADCnroi},      ...
+                        {v_subjADCroi,  v_normADC},          ...
+                        {v_subjADCnroi, v_normADC},          ...
+                        {v_subjASLroi,  v_subjASLnroi},      ...
+                        {v_subjASLroi,  v_normASL},          ...
+                        {v_subjASLnroi, v_normASL}           ...
+};
+
 cstr_testDesc   = {                                             ...
                         'ADC$_s(r)$ -vs- ADC$_s(\check{r})$',   ...
                         'ADC$_s(r)$ -vs- ADC$_n$',              ...
@@ -139,10 +143,10 @@ fprintf('%*s & %*s & %*s & %*s & %*s \\\\\n',                   ...
         w_colData, cstr_tailDesc{2},                            ...
         w_colData, cstr_tailDesc{3});
 fprintf('\\hline \\hline \n');
-for exp = 1:length(cM_test)
-    M   = cM_test{exp};
-    v1  = M(:, 1);
-    v2  = M(:, 2);
+for exp = 1:length(c_test)
+    M   = c_test{exp};
+    v1  = M{1};
+    v2  = M{2};
     fprintf('%*s &', w_colA, cstr_testDescA{exp});
     fprintf('%*s',   w_colB, cstr_testDescB{exp});
     for tail = 1:length(cstr_tail)
