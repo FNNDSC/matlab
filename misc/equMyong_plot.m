@@ -7,7 +7,9 @@ function [ret] = equMyong_plot(av_coeff1, aM_D1, av_coeff2, aM_D2, varargin)
 %                                       av_coeff2,              ...
 %                                       aM_D2,                  ...
 %                                       [astr_title,            ...
-%                                        ab_logPlot])
+%                                        ab_logPlot,            ...
+%                                        astr_ylabel,           ...    
+%                                        astr_legendLocation])
 %
 % ARGUMENTS
 %       
@@ -22,6 +24,9 @@ function [ret] = equMyong_plot(av_coeff1, aM_D1, av_coeff2, aM_D2, varargin)
 %						+ in the title string are 
 %						+ replaced by spaces
 %	ab_logPlot		bool		if true, do a log plot
+%       astr_ylabel             string          y-axis label string
+%       astr_legendLocation     string          one of 'NorthWest', 'NorthEast'
+%                                               'SouthWest', etc.
 %
 %       OUTPUT
 %       ret                     bool            true: OK; false: error
@@ -85,17 +90,19 @@ function [ret] = equMyong_plot(av_coeff1, aM_D1, av_coeff2, aM_D2, varargin)
 
 sys_print('equMyong_plot: START\n');
 
-ret             = 1;
+ret                     = 1;
  
-b_logPlot	= 0;
-str_title       = 'Equation plot';
-str_xlabel      = 'age (weeks)';
-str_ylabel      = 'vol (cc)';
+b_logPlot	        = 0;
+str_title               = 'Equation plot';
+str_xlabel              = 'age (weeks)';
+str_ylabel              = 'vol (cm^3)';
+str_legendLocation      = 'NorthWest';
 
 % Parse optional argumentss
-if length(varargin) >= 1, str_title     = varargin{1};  	end
-if length(varargin) >= 2, b_logPlot     = varargin{2}; 		end
-if length(varargin) >= 3, str_ylabel    = varargin{3};          end
+if length(varargin) >= 1, str_title             = varargin{1};  	end
+if length(varargin) >= 2, b_logPlot             = varargin{2}; 		end
+if length(varargin) >= 3, str_ylabel            = varargin{3};          end
+if length(varargin) >= 4, str_legendLocation    = varargin{4};          end
 
 % process
 M_allData       = [ aM_D1' aM_D2'];
@@ -116,16 +123,16 @@ if gb == gg && ~gb
     b_gender    = 0;
 end
 
-plot(aM_D1(:,1), aM_D1(:,2), 'bo', 'MarkerFaceColor', 'b');
+plot(aM_D1(:,1), aM_D1(:,2), 'bo', 'MarkerFaceColor', 'w', 'MarkerSize', 8);
 hold on;
-plot(aM_D2(:,1), aM_D2(:,2), 'ro', 'MarkerFaceColor', 'r');
+plot(aM_D2(:,1), aM_D2(:,2), 'rx', 'MarkerFaceColor', 'r', 'MarkerSize', 8);
 g1              = 1*aM_D1(1,3);
 g2              = 1*aM_D2(1,3);
 v_f1            = func(av_coeff1, t, g1);
 v_f2            = func(av_coeff2, t, g2);
 if b_gender
-    plot(t, v_f1, '-b');
-    plot(t, v_f2, '-r');
+    plot(t, v_f1, '--b');
+    plot(t, v_f2, ':r', 'LineWidth', 1.5);
     lh = legend('male', 'female', 'male interpolation', 'female interpolation');
 else
     plot(t, v_f1, '-g');
@@ -137,15 +144,18 @@ str_titlerep	= strrep(str_title, '_', ' ');
 title(str_titlerep);
 xlabel(str_xlabel);
 ylabel(str_ylabel);
-legend('Location', 'NorthWest');
+legend('Location', str_legendLocation);
 set(gca, 'Box', 'off');
 set(hf, 'color', 'white');
+set(gca, 'fontsize', 12);
 
 str_epsFile     = sprintf('%s.eps', str_title);
+str_epsFileBW   = sprintf('%s-bw.eps', str_title);
 str_jpgFile     = sprintf('%s.jpg', str_title);
 
-print('-depsc2', str_epsFile);
-print('-djpeg',  str_jpgFile);
+print('-depsc2', '-r1200', str_epsFile);
+print('-deps',   '-r1200', str_epsFileBW);
+print('-djpeg',  '-r1200', str_jpgFile);
 
 sys_print('equMyong_plot: END\n');
 

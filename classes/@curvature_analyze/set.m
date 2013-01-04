@@ -102,6 +102,8 @@ while length(propertyArgIn) >= 2,
         C.mb_subjLabelFile_use          = val;
     case        'usePlotLines'
         C.mb_useLines                   = val;
+    case        'b_parcelFromLabelFile'
+        C.mb_parcelFromLabelFile        = val;
 
    otherwise
         error('curvature_analyze:Properties:set error');

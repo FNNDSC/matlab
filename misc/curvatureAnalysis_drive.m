@@ -29,6 +29,7 @@ function [C]    = curvatureAnalysis_drive(astr_annotFile, astr_groupFileID, vara
 %       cstr_surfaceSpec        cell    (of strings) denoting the surfaces
 %                                               to process
 %       b_usePlotLines          int     set the "plot lines" bit in graphs.
+%       b_plotHistograms        int     set the "plotHistogram" bit.
 %       b_autodijk              int     if true, perform an autodijk analysis
 %       str_hemi                string  if specified, process passed hemi
 %	str_subjSpec	        string	if specified, process subject spec
@@ -142,6 +143,15 @@ function [C]    = curvatureAnalysis_drive(astr_annotFile, astr_groupFileID, vara
     C = set(C, 'usePlotLines',                  b_plotLines);
     C = set(C, 'b_curvFuncClear',               1);
     C = set(C, 'b_drawHistPlots',               b_plotHistograms);
+    C = set(C, 'b_parcelFromLabelFile',         true);
+
+    if b_plotHistograms
+        C = set(C, 'b_lowerLimit',              1);
+        C = set(C, 'f_lowerLimit',              -2.0);
+        C = set(C, 'b_upperLimit',              1);
+        C = set(C, 'f_upperLimit',              2.0);
+    end
+
     if ~b_autodijk
         if ~b_curvSpec
             C = set(C, 'curvFuncFilter',    'K');

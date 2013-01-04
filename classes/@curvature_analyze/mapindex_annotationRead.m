@@ -76,7 +76,8 @@ if strcmp(str_region, 'entire')       ...
                                     C.ms_annotation.mstr_annotFile);
 
     if ~exist(str_annotationFile)
-        error_exit(C, '1', 'Could not access annotation file');
+        error_exit(C, '1', ...
+            sprintf('Could not access annotation file: %s', str_annotationFile));
     end
 
     [v_list, v_label, annot]            = read_annotation(              ...

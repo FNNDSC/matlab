@@ -1,7 +1,9 @@
-function [ax h1 h2] = adcasl_bar(varargin)
+function [ax h1 h2] = adcasl_bar(astr_fileAdcAslData, varargin)
 
 %
 % INPUTS
+%     astr_fileAdcAslData	string		file containing ADCASL data.
+%     
 %   OPTIONAL
 %     v_YLim1           vector              limits on Y1-axis
 %     YTicks1           int                 number of ticks on Y1 axis
@@ -9,13 +11,20 @@ function [ax h1 h2] = adcasl_bar(varargin)
 %     Y_Ticks2          int                 number of ticks on Y2
 %                                           axis
 %     str_fileOut       string              stem for output file save/print
+%     xTicks            cell array          ticks to use for the x-axis
+%
+% EXAMPLE
+%     o [ax h1 h2] = adcasl_bar('data.log', [], 20, [0 340], 20, ...
+%                               'ADCASLnROI', ...
+%                               {'','1','2','3','4','5','6','7','8','9',''});
 %
 
-b_YLim1   = 0;
-b_YLim2   = 0;
-YTicks1   = 20;
-YTicks2   = 20;
-b_figSave = 0;
+b_YLim1         = 0;
+b_YLim2         = 0;
+YTicks1         = 20;
+YTicks2         = 20;
+b_figSave       = 0;
+b_useXticks     = 0;
 
 if length(varargin) >= 1
   if length(varargin{1})
@@ -44,14 +53,22 @@ if length(varargin) >= 5
   str_fileOut = varargin{5};
 end
 
-t5 = load('table5.txt');
+if length(varargin) >= 6
+  b_useXticks   = 1;
+  c_XtickLabel  = varargin{6};
+end
+
+
+t5 = load(astr_fileAdcAslData);
+
+[rows cols] = size(t5);
 
 y1 = t5(:,1); e1 = t5(:,2);
 y2 = t5(:,3); e2 = t5(:,4);     
 y3 = t5(:,5); e3 = t5(:,6);     
 y4 = t5(:,7); e4 = t5(:,8);          
 
-x   = 1:11;
+x   = 1:rows;
 x11 = x - 0.3;
 x12 = x - 0.1;
 x21 = x + 0.1;
@@ -90,12 +107,13 @@ s_Y2.legendNames = { 'ASL-CBP ROI', '\sigma(ASL-CBP ROI)', 'ASL-CBP nonROI', ...
                     '\sigma(ASL-CBP nonROI)'}';
 s_Y2.YTicks = YTicks2;
 
-figure;
+figure(10);
 bar2plot(M_X1, s_Y1);
 hold on;
 bar2plot(M_X2, s_Y2);
 
 xlabel('Subject ID');
+
 title('ADC and ASL-CBP values within and without ROIs');
 
 [ax h1 h2] = plotyy(M_X1, s_Y1, M_X2, s_Y2, 'bar2plot');
@@ -103,7 +121,12 @@ title('ADC and ASL-CBP values within and without ROIs');
 grid minor;
 set(get(ax(1), 'Ylabel'), 'String', 'ADC [10^{-6}mm^2/s]');
 set(get(ax(2), 'Ylabel'), 'String', 'ASL-CBP [ml / 100g / min]');
-set(gca, 'XTick', 1:length(x));
+if b_useXticks
+    set(get(ax(1), 'XTickLabel'), 'Cell', c_XtickLabel);
+    set(get(ax(2), 'XTickLabel'), 'Cell', c_XtickLabel);
+else
+    set(gca, 'XTick', 1:length(x));
+end
 
 if b_YTicks1
   v_y1max = get(ax(1), 'YLim'); y1max = v_y1max(2);

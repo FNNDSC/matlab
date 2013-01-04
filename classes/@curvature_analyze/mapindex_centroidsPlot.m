@@ -208,7 +208,7 @@ function subjCentroid_plot(astr_title)
     fh                  = subjCount*10;
     if max(v_Yn) > f_ymax, f_ymax = max(v_Yn);  end
     if isnan(min(v_Xn)),   f_xmin = 0.0;        end 
-    figure(fh);
+    hfig = figure(fh);
     str_visibility      = 'on';
     if C.mb_offScreenCentroidPlots
         str_visibility  = 'off';
@@ -260,8 +260,7 @@ function subjCentroid_plot(astr_title)
     str_jpgFile = sprintf('%s/%s.jpg', str_wd, str_fileStem);
     colprintf(C, '', '[ ok ]\n');
     lprintf(C, 'Save %s', str_fileStem);
-    print('-depsc2', str_epsFile);
-    print('-djpeg',  str_jpgFile);
+    imprint(C, str_epsFile, str_jpgFile);
     close(fh);
 end
 

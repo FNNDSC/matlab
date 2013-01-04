@@ -158,8 +158,27 @@ if ~strcmp(str_region, 'entire')
         if isempty(iregion)
             error_exit(C, '1', 'Could not find %s in annotation', str_region);
         end
-        ilabel                      = sAnnot.table(iregion, 5);
-        v_curvParcel                = v_curvEntire(find(v_label == ilabel));
+        if ~C.mb_parcelFromLabelFile
+            ilabel              = sAnnot.table(iregion, 5);
+            v_curvParcel        = v_curvEntire(find(v_label == ilabel));
+        else
+            % Here, we attempt to read from the original label file
+            % and not the annotation structure. This is useful in cases
+            % where the annotation packed label is different from the
+            % original label, which is typically the case for "overlapping"
+            % border ISO regions.
+            str_labelFileName   = sprintf('%s.%s',                              ...
+                                            str_hemi,                           ...
+                                            str_region);
+            lprintf(C, '\nlabel file = %s\n', str_labelFileName);
+            %keyboard;
+            label               = read_label(str_subjName, str_labelFileName);
+            v_indices           = label(:,1);
+            % Since the label is read from a C-based counting system, we need
+            % to increase each index with '1' for MatLAB...
+            v_indices           = v_indices + 1;
+            v_curvParcel        = v_curvEntire(v_indices);
+        end
         write_curv(str_parcelFileName, v_curvParcel, -1);
     end
 

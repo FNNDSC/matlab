@@ -174,6 +174,8 @@ for i=1:length(cM)
 	fid_stats	= fopen(str_stats, 'w');
 	fprintf(fid_lgz, '%f\t%f\t%f\n', M_lgz');
 	fprintf(fid_stats, '%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n', M_stats');
+        fclose(fid_lgz);
+        fclose(fid_stats);
 end
 
 if b_drawPlots

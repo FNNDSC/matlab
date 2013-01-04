@@ -90,6 +90,14 @@ C.ms_annotation.mstr_annotFile  = 'aparc.annot';
 C.ms_annotation.msAnnotation    = struct;
 C.ms_annotation.mv_label        = [];
 C.ms_annotation.mv_list         = [];
+C.mb_parcelFromLabelFile        = 0;            % If true, generate the parcel
+                                                %+ from the label file, and not
+                                                %+ the annotation. This is only
+                                                %+ useful if the label packed
+                                                %+ in the annotation differs
+                                                %+ from the original label --
+                                                %+ only really a case in the
+                                                %+ border overlap analysis.
 
 %
 % Core map structural components

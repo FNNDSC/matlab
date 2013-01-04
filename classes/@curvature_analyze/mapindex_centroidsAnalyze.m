@@ -640,8 +640,7 @@ function subjCentroid_analyze(astr_title)
     str_jpgFile = sprintf('%s/%s.jpg', str_wd, astr_title);
     colprintf(C, '', '[ ok ]\n');
     lprintf(C, 'Save %s', astr_title);
-    print('-depsc2', str_epsFile);
-    print('-djpeg',  str_jpgFile);
+    imprint(C, str_epsFile, str_jpgFile);
     close(fh);
 end
 

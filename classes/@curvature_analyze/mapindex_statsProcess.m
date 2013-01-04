@@ -135,6 +135,13 @@ C.m_verbosityLevel      = 2;
 %str_nodeIndex       = basename(astr_mapIndex, '.curvature');
 str_statsIndex      = sprintf('%s.stats', astr_mapIndex);
 
+%if      strcmp(str_hemi,        'lh')                                        & ...
+%        strcmp(str_curvFunc,    'K')                                         & ...
+%        strcmp(str_region,      'intersect-frontal-parietal-r30-ply25')      & ...
+%        strcmp(str_surfaceType, 'smoothwm')
+%    keyboard;
+%end
+
 lprintf(C, 'Stats on %s', astr_mapIndex);
 v_curv              = elementData{C.mi_indexCurvature};
 
