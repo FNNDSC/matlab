@@ -1,9 +1,74 @@
 function [c]    = basac_drive(varargin)
+%
+% NAME
+% 
+%       basac_drive
+%       
+% SYNOPSIS
+% 
+%       basac_drive(    [<str_dataDir>,
+%                       [<f_stdOffsetASL>,
+%                       [<f_stdOffsetADC>,
+%                       [<f_stdOffsetADCCSF>]]]])
+%       
+% ARGS
+%
+%       str_dataDir             string  directory containing pre-processed
+%                                       ADC and ASL volumes
+%       f_stdOffsetASL          float   deviation offset for the ASL (-2.5)
+%       f_stdOffsetADC          float   deviation offset for the ADC (-2.5)
+%       f_stdOffsetADCCSF       float   deviation offset for the CSF
+%                                       suppression in the ADC vol (+1.5)
+% DESC
+% 
+%       'basac_drive' is a simple driver for a B0, ASL, ADC analysis. It will
+%       attempt to find co-located regions of high deviation signal in both the
+%       ADC and ASL volumes of a pre-processed dataset. By default, the analysis
+%       looks for co-located _low_ ADC intensity and _high_ ASL intensity.
+%       
+%       The deviation profiles can be tweaked using optional arguments.
+%       
+% EXAMPLES
+% 
+%       In the following, assume that the directory containing pre-processed
+%       volumes is called 'outDir':
+%       
+%       o Example 1: Default -- look for _low_ ADC co-located with _high_ ASL:
+%       
+%               >>basac_drive('outDir');
+%               
+%       o Example 2: Same as above, but with explicit offset specs:
+%       
+%               >>basac_drive('outDir', -2.5, -2.5);
+%               
+%       o Example 3: Look for _low_ ADC co-located with _low_ ASL:
+%       
+%               >>basac_drive('outDir', +2.5, -2.5);
+%               
+%       o Example 4: Look for _high_ ADC co-located with _low_ ASL:         
+%               
+%               >>basac_drive('outDir', +2.5, +2.5);
+%
+%       o Example 5: Look for _high_ ADC co-located with _high_ ASL:
+%       
+%               >>basac_drive('outDir', -2.5, +2.5);
+%            
 
     str_startDir        = pwd;
     str_dataDir         = pwd;
 
-    if length(varargin) >= 1, str_dataDir       = varargin{1};          end
+    f_stdOffsetASL      = -2.5; % The deviation offset for ASL
+                                % Note that a *negative* offset in the case of 
+                                % ASL is taken to mean a positive deviation. To
+                                % search for ASL regions *less* than the normal
+                                % mean, set this offset to positive.
+    f_stdOffsetADC      = -2.5; % The deviation offset for ADC
+    f_stdOffsetADCCSF   =  1.5; % The CSF suppression offset
+    
+    if length(varargin) >= 1,   str_dataDir             = varargin{1};  end
+    if length(varargin) >= 2,   f_stdOffsetASL          = varargin{2};  end
+    if length(varargin) >= 3,   f_stdOffsetADC          = varargin{3};  end
+    if length(varargin) >= 4,   f_stdOffsetADCCSF       = varargin{4};  end
     cd(str_dataDir);
 
     c = basac_process();
