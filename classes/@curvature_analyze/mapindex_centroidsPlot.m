@@ -238,8 +238,12 @@ function subjCentroid_plot(astr_title)
         end            
 
         if(~max(v_negNaN))
-            plot( v_Xng, v_Yng, str_lineSpec,   ...
-            'MarkerFaceColor', C.mc_colorSpec{group});
+            try
+                plot( v_Xng, v_Yng, str_lineSpec,   ...
+                'MarkerFaceColor', C.mc_colorSpec{group});
+            catch
+                keyboard;
+            end
             if C.mb_centroidLabelPlot
                 plot_label(v_Xng, v_Yng, cstr_label);
             end
