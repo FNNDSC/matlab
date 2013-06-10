@@ -152,6 +152,8 @@ C.ms_centroid.xp                = 0.0;
 C.ms_centroid.yp                = 0.0;
 C.ms_centroid.xc                = 0.0;
 C.ms_centroid.yc                = 0.0;
+C.ms_centroid.skewness          = 0.0;
+C.ms_centroid.kurtosis          = 0.0;
 
 %
 % General data organized according to curvature types
