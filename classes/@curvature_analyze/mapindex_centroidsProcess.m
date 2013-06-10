@@ -75,7 +75,7 @@ function subjCentroid_save(astr_outputDir, astr_outputFileStem)
                                     astr_outputDir,                     ...
                                     astr_outputFileStem);
     fid                 = fopen(str_centFile, 'w');
-    c_strFieldNames     = { 'Subj', 'xn', 'yn', 'xp', 'yp', 'xc', 'yc'};
+    c_strFieldNames     = { 'Subj', 'xn', 'yn', 'xp', 'yp', 'xc', 'yc', 'skewness', 'kurtosis'};
 
 
     headerRow_fprintf(fid, c_strFieldNames);
@@ -148,6 +148,8 @@ if ~isnan(v_hist)
     C.ms_centroid.yp            = NaN;
     C.ms_centroid.xc            = NaN;
     C.ms_centroid.yc            = NaN;
+    C.ms_centroid.skewness      = NaN;
+    C.ms_centroid.kurtosis      = NaN;
     v_negHist                   = find(v_hist(:,1) <  0);
     v_posHist                   = find(v_hist(:,1) >= 0);
     if length(v_negHist) > 1
@@ -159,6 +161,8 @@ if ~isnan(v_hist)
         v_posCentroid           = centroidND_find(v_hist(v_posHist,:));
         C.ms_centroid.xp        = v_posCentroid(1);
         C.ms_centroid.yp        = v_posCentroid(2);
+        C.ms_centroid.skewness  = skewness(v_hist(:,2));
+        C.ms_centroid.kurtosis  = kurtosis(v_hist(:,2));
     end
     v_centroid                  = centroidND_find(v_hist);
     C.ms_centroid.xc            = v_centroid(1);
