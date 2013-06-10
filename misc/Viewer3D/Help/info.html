@@ -1,0 +1,205 @@
+<html>
+<head>
+<title>Viewer3D Help</title>
+</head>
+<body>
+<h1>Viewer3D Help</h1>
+<h2>Index</h2>
+<ul>
+<li><a href="#viewer3d">Viewer3D (Intro)</a></li>
+<li><a href="#shearwarp">Shear-Warp</a></li>
+<li><a href="#starting">Starting Viewer3D</a></li>
+<li><a href="#menu">Menu Items</a></li>
+<li><a href="#mouse">Mouse Control</a></li>
+<li><a href="#alphawindow">Change Alphacolors Window</a></li>
+</ul>
+
+<h2 id="viewer3d">Viewer3D (Intro)</h2>
+This viewer can be used to interactively view any kind of 2D, 3D and 4D image volumes like CT and MRI.  <br>
+It includes:<br>
+<table>
+<tr>
+	<td>
+		<center><b>Maximum intensity projections (MIP)</b><br>
+		<img src='help004.png'></img><br></center>
+	</td>
+	<td>
+		<center><b>Volume Rendering (VR)</b><br>
+		<img src='help005.png'></img><br></center>
+	</td>
+</tr>
+<tr>
+	<td>
+		<center><b>Colored Volume Rendering</b><br>
+		<img src='help006.png'></img><br></center>
+	</td>
+	<td>
+		<center><b>Phong shaded Volume rendering.</b><br> 
+		<img src='help003.png'></img><br></center>
+	</td>
+</tr>
+<tr>
+	<td>
+		<center><b>SliceView</b><br>
+		<img src='help008.png'></img><br></center>
+	</td>
+	<td>
+		<center><b>Distance Measurement</b><br> 
+		<img src='help010.png'></img><br></center>
+	</td>
+</tr>
+<tr>
+	<td>
+		<center><b>Volume Measurment</b><br>
+		<img src='help011.png'></img><br></center>
+	</td>
+	<td>
+		<center><b>Active Contour Segmentation</b><br> 
+		<img src='help012.png'></img><br></center>
+	</td>
+</tr>
+</table>
+<br>
+<br>
+<h2 id="shearwarp">Shear-Warp</h2>
+The fast render algorithm which used is based on a c-code implementation of the Shear-Warp transform.<br>
+<br>
+Instead of rotating the viewer rays the volume slices are sheared, and the rays go parallel through<br>
+the volume allowing 2D interpolation instead of 3D, and efficient caching of data<br>  
+<img src='help007.png'></img><br>
+The intermediate image after rendering through the sheared slices must be warped to <br>
+get the correct final image. </br>
+
+<h2 id="starting">Starting Viewer3D</h2>
+<pre>
+  Just start with
+    VIEWER3D
+ 
+  Or to display one or more matlab volumes
+ 
+    VIEWER3D(V);              VIEWER3D(V1,V2,V3 ....);
+ 
+ 
+  inputs,
+  V : 2D, 3D or 4D Input image, of type double, single, uint8, 
+             uint16, uint32, int8, int16 or int32 
+             (the render process uses only double calculations)
+
+The Matlab render functions are also available as MEX / c-code in mex_c-code.zip<br>
+</pre>
+
+<h2 id="menu">Menu Items</h2>
+<h3>File</h3>
+<img src='help013.png'></img><br>
+<ul>
+<li>Load View : Load a Previous Saved Render</li>
+<li>Load Worksapce Variable: Load a 2D,3D or 4D (volume) variable from the Matlab Workspace </li>
+<li>Open Medical 3D : Load medical image file(s) (for example Dicom)</li>
+<li>Save View : Save render data to a matlab file.</li>
+<li>Save Picture : Save a "Screenshot" to an image file (.png or .jpg)</li>
+<li>...Filename : Fast load previous saved data</li>
+</ul>
+<h3>Window</h3>
+<img src='help014.png'></img><br>
+Set the amount of separate render-windows in the Viewer3d. 
+<h3>Config</h3>
+<img src='help015.png'></img><br>
+<ul>
+<li>Quality v. Speed: Change Config options, suchs as size-used for rendering, allowing fast-coarse renders, or fine slow renders.</li>
+<li>Compile C Files: Will compile c-coded files to make the Viewer3d much faster</li>
+</ul>
+<h3>Help</h3>
+<img src='help016.png'></img><br>
+<ul>
+<li>Help : Display this help document</li>
+<li>About : Display version an author information</li>
+<li>Console : Matlab will go in debuging mode, allowing you to view the contents of the data-struct containing all the render data</li>
+</ul>
+<h3>Volume 1</h3>
+<img src='help017.png'></img><br>
+<ul>
+<li>WindowLevelWidth : Change the Window Level / Width. Thus Contrast and brightness setting of the Volume</li>
+<li>Change AlphaColors : Change the rendered transparency and color of the volume greyvalues</li>
+<li>VoxelSize : Change the x,y,z size of each pixel/voxel (Scaling)</li>
+<li>Data Info : Show available info from the medical-data file (for example dicom info)</li>
+<li>Add Empty(Segment) Volume: Add an empty volume (Here shown in green), which can be used to store data during segmentation of the original volume</li>
+<li>Volume to Workspace: Will create the variables VolumeData (Containin the voxeldata), VolumeInfo (struct with  additional info) and VolumScales in the default Matlab Workspace, so you can use it with your own matlab code</li>
+<li>Close : Will remove this volume from the Viewer3d data</li>
+</ul>
+
+<h3>Render</h3>
+<img src='help018.png'></img><br>
+<ul>
+<li>None : Display a black image</li>
+<li>View X,Y,Z : Display a slice of the image Volume. In this mode you can also Measure and Segment an Image</li>
+<li>MIP : Maximum intensity render </li>
+<li>Greyscale, Color, Shaded : Volume Rendering. You can change the Colors and Transparancy in the "Volume x, Change AlphaColor" menu
+</ul>
+
+<h3>Volume</h3>
+<img src='help019.png'></img><br>
+Select the volume(s) which you want to render. You can segment an image if the render is "slice x,y,z" and you select multiple volumes from which one is a new-empty(Segmentation volume) shown in green. 
+
+
+<h3>Config</h3>
+<img src='help020.png'></img><br>
+<ul>
+<li>Light Vector: Change the direction of the light in the Shaded render</li>
+<li>Shading shiny, Dull, Metal: Change the material properties for shaded render</li>
+<li>Slices Color : Use the AlphaColormap to color the slices, in "slice x,y,z" render mode</li>
+<li>Combine Transparent, RGB : When two Volumes are select, you can combine the renders, or RGB wise, or overlay wise</li>
+
+</ul>
+
+<h3>Measure</h3>
+<img src='help021.png'></img><br>
+Only available in slice render mode
+<ul>
+<li>Distance : With the left mouse button you can click a line between two points. This line will show the distance between the points.</li>
+<li>Roi: With the left mouse button you can click a few points, after double-click you finish the ROI. You can see the volume of the ROI and In the corner of the screen you can see the combined volume of all ROI's</li>
+</ul>
+You can also drag measurement points, and lines with the left mouse button. Or remove a measurement with the right mouse button 
+
+<h3>Segment</h3>
+<img src='help022.png'></img><br>
+<img src='help023.png'></img><br>
+Only available in slice render mode, and if you selected two or more volumes from which one is an editable volume (shown in green).
+
+<ul>
+ <li>Roi Selection: You can click points with the left mouse button, after double-click you finish the ROI. </li>
+ <li>You can drag the ROI and points of the ROI with the left mouse button./li>
+ <li>To move the select ROI nearer to the boundaries, click "Move Contour to Edges"</li>
+ <li>To really segment the Structure, click "Segment"</li>
+ <li>For moving the ROI to the boundaries, a snake is used. The Snake-Properties can be changed in the Properties window. Note, Change Verbose to 1, to see how the snake behaves </li>
+</ul>
+
+<h2 id="mouse">Mouse Control</h2>
+<img src='help001.png'></img><br>
+<ul>
+<li>Zoom: Right mouse button
+<li>Pan : Center mouse button</li>
+<li>Change Slice: Scroll button, or arrow keys</li>
+<li>Rotate around Z: Left mouse button at boundary of renderimage</li>
+<li>Rotate around XY: Left mouse button in center of renderimage</li>
+<li>Remove measurement: Right mouse button on edge of measurement</li>
+<li>Drag Measurement : Left mouse button on edge of measurement</li>
+<li>Drag Points : Left mouse button on points of measurement/segmentation</li>
+</ul>
+<br>
+
+<h2 id="alphawindow">Change Alphacolors Window</h2>
+<img src='help002.png'></img><br>
+<br>
+The graph is showing the histogram of the data, with on the x-axis the intensity values.<br>
+The curve shown is a mapping from intensity to alpha and color, with on the y-axis <br>
+the opacity of the voxel form zero (transparent) to one (solid)<br>
+<br>
+<ul>
+<li>drag a point with the left mouse button in y direction down to make a voxel of a certain intensity more transparent.</li>
+<li>click with the left mouse button on the line between the poinst to create a new (control) point</li>
+<li>click on a control point with the right mouse button to remove it.</li>
+<li>click on a control point with the center mouse button to change its color</li>
+</ul>
+</body>
+</html>
+

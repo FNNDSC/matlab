@@ -1,0 +1,13 @@
+ObjectType = Image
+NDims = 3
+BinaryData = True
+BinaryDataByteOrderMSB = False
+CompressedData = False
+TransformMatrix = 1 0 0 0 1 0 0 0 1
+Offset = -3.94113 -3.94113 -10.4233
+CenterOfRotation = 0 0 0
+AnatomicalOrientation = RAI
+ElementSpacing = 3.71613 3.71613 9.83333
+DimSize = 35 35 28
+ElementType = MET_DOUBLE
+ElementDataFile = ffdreg_01_cgx.raw

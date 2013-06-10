@@ -1,0 +1,126 @@
+<html>
+<head>
+<title>Viewer3D Help</title>
+</head>
+<body>
+<h1>Viewer3D Help</h1>
+<h2>Index</h2>
+<ul>
+<li><a href="#viewer3d">Viewer3D (Intro)</a></li>
+<li><a href="#shearwarp">Shear-Warp</a></li>
+<li><a href="#starting">Starting Viewer3D</a></li>
+<li><a href="#menu">Menu Items</a></li>
+<li><a href="#mainwindow">Main Render Window</a></li>
+<li><a href="#alphawindow">Change Alphacolors Window</a></li>
+</ul>
+
+<h2 id="viewer3d">Viewer3D (Intro)</h2>
+This viewer can be used to interactively view any kind of 3D image volumes like CT and MRI.  <br>
+It includes:<br>
+<table>
+<tr>
+	<td>
+		<center><b>Maximum intensity projections (MIP)</b><br>
+		<img src='help004.png'></img><br></center>
+	</td>
+	<td>
+		<center><b>Volume Rendering (VR)</b><br>
+		<img src='help005.png'></img><br></center>
+	</td>
+</tr>
+<tr>
+	<td>
+		<center><b>Colored Volume Rendering</b><br>
+		<img src='help006.png'></img><br></center>
+	</td>
+	<td>
+		<center><b>Phong shaded Volume rendering.</b><br> 
+		<img src='help003.png'></img><br></center>
+	</td>
+</tr>
+</table>
+Voxel opacity and color tables can be changed on the fly allowing also iso surface kind of renders.  <br>
+<br>
+<h2 id="shearwarp">Shear-Warp</h2>
+The fast render algorithm which used is based on a c-code implementation of the Shear-Warp transform.<br>
+<br>
+Instead of rotating the viewer rays the volume slices are sheared, and the rays go parallel through<br>
+the volume allowing 2D interpolation instead of 3D, and efficient caching of data<br>  
+<img src='help007.png'></img><br>
+The intermediate image after rendering through the sheared slices must be warped to <br>
+get the correct final image. </br>
+
+<h2 id="starting">Starting Viewer3D</h2>
+<pre>
+Viewer3D can be called from the command window with the following inputs:<br>
+  VIEWER3D(V, RENDERTYPE, SCALES);<br>
+  inputs,<br>
+    V : 3D Input image volume, of type double, single, uint8, uint16 or uint32 <br>
+              (the render process uses only double calculations)<br>
+    RENDERTYPE: 'MIP' Maximum Intensity Render (default)<br>
+                'VR' Volume Rendering<br>
+                'VRC' Volume Rendering Color<br>
+                'VRS' Volume Rendering with Shading<br>
+    SCALES: The sizes(height, width, depth) of one voxel. (default [1 1 1])<br>
+
+When Viewer3D is called without inputs you can load a previous saved view.
+
+The Matlab render functions are also available as MEX / c-code in mex_c-code.zip<br>
+</pre>
+
+<h2 id="menu">Menu Items</h2>
+<img src='help008.png'></img><br>
+<h3>File</h3>
+<ul>
+<li>Load View : Load a previous saved render</li>
+<li>Save View : Save render data to a matlab file</li>
+<li>Save Picture : Save a "Screenshot" to an image file (.png or .jpg)</li>
+</ul>
+<h3>Render</h3>
+<ul>
+<li>MIP : Maximum intensity projection rendering</li>
+<li>Greyscale : Greyscale volume rendering</li>
+<li>Color : Colored volume rendering</li>
+<li>Shaded : Phong shaded volume rendering</li>
+<li>Image 400x400 : Rendered viewer image size 400x400</li>
+<li>Image 800x800 : Rendered viewer image size 800x800</li>
+</ul>
+<h3>Config</h3>
+<ul>
+<li>Change AlphaColor : Will display the AlphaColor Window, used to change opacity and color of voxels</li>
+<li>Shading Shiny, change Phong shading to make object look shiny</li>
+<li>Shading Dull, change Phong shading to make object look dull</li>
+<li>Shading Metal, change Phong shading to make object look metal</li>
+</ul>
+<h3>Info</h3>
+<ul>
+<li>Help : Display this help document</li>
+<li>About : Display version an author information</li>
+</ul>
+
+<h2 id="mainwindow">Main Render Window</h2>
+<img src='help001.png'></img><br>
+<ul>
+<li>Zoom: Right mouse button</li>
+<li>Pan : Center mouse button</li>
+<li>Rotate around Z: Left mouse button at boundary of renderimage</li>
+<li>Rotate around XY: Left mouse button in center of renderimage</li>
+</ul>
+<br>
+
+<h2 id="alphawindow">Change Alphacolors Window</h2>
+<img src='help002.png'></img><br>
+<br>
+The graph is showing the histogram of the data, with on the x-axis the intensity values.<br>
+The curve shown is a mapping from intensity to alpha and color, with on the y-axis <br>
+the opacity of the voxel form zero (transparent) to one (solid)<br>
+<br>
+<ul>
+<li>drag a point with the left mouse button in y direction down to make a voxel of a certain intensity more transparent.</li>
+<li>click with the left mouse button on the line between the poinst to create a new (control) point</li>
+<li>click on a control point with the right mouse button to remove it.</li>
+<li>click on a control point with the center mouse button to change its color</li>
+</ul>
+</body>
+</html>
+
