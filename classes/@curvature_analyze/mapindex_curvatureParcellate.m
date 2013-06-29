@@ -112,7 +112,6 @@ if ~strcmp(str_region, 'entire')
     catch
         readSuccess = 0;
     end
-    
     if ~readSuccess              
         if ~exist(str_parcelDir, 'dir'), dir_create(str_parcelDir); end;
                    
@@ -171,7 +170,6 @@ if ~strcmp(str_region, 'entire')
                                             str_hemi,                           ...
                                             str_region);
             lprintf(C, '\nlabel file = %s\n', str_labelFileName);
-            %keyboard;
             label               = read_label(str_subjName, str_labelFileName);
             v_indices           = label(:,1);
             % Since the label is read from a C-based counting system, we need
