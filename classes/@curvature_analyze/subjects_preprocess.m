@@ -131,18 +131,27 @@ for subjIndex = 1:numel(c_dirLst)
     str_voxelFile               = sprintf('%s/%s',      ...
                                 str_workingDir, c.ms_info.mstr_voxelFile);
     str_voxel                   = '[ 1.0 1.0 1.0 ]';
-    if exist(str_voxelFile)
+    fstats                      = dir(str_voxelFile);
+    if exist(str_voxelFile) & fstats.bytes
+        colprintf(c, 'voxelSize.txt file in bytes', '[ %d ]\n', fstats.bytes);
         c.ms_info.mv_voxelSize  = load(str_voxelFile);
+        lprintf(c, 'Loading voxelSize.txt...', str_voxelFile);
         str_voxel               = sprintf('%f ', c.ms_info.mv_voxelSize);
+        colprintf(c, '', '[ ok ]\n');
     else
+        colprintf(c, 'Probing for voxelSize...' , '[ ok ]\n');
         chq                     = char(39);     % '
         chs                     = char(92);     % \
         str_subjDir             = c.ms_info.mstr_subjDir;
-        [ret str_dcm]           = unix(                 ...
-            sprintf('find %s -follow -iname "*.dcm"|head -n 1', str_subjDir));
-        if length(str_dcm)
+        colprintf(c, 'Finding dcm file to query...', '[ ok ]\n');
+        str_mri                 = sprintf('%s/mri/orig.mgz', str_subjDir);
+%        [ret str_mri]           = unix(                 ...
+%            sprintf('find %s -follow -iname "*.dcm"|head -n 1', str_subjDir))
+        colprintf(c, 'Found file...', '[ ok ]\n');
+        fstats = dir(str_mri);
+        if length(str_mri) & fstats.bytes
             colprintf(c, 'Running "mri_info"...', '');
-            [ret str_mriInfo]   = unix(sprintf('env LD_LIBRARY_PATH= mri_info %s', str_dcm));
+            [ret str_mriInfo]   = unix(sprintf('env LD_LIBRARY_PATH= mri_info %s', str_mri));
             [ret str_voxel]     =       ...
             unix(sprintf('echo "%s" | grep "voxel sizes" | awk -F %s: %s{print $2}%s', ...
             str_mriInfo, chs, chq, chq));
@@ -151,6 +160,9 @@ for subjIndex = 1:numel(c_dirLst)
             c.ms_info.mv_voxelSize  = sscanf(str_voxel, '%f, %f, %f');
             fid = fopen(str_voxelFile, 'w');
             fprintf(fid, '%s', str_voxel);
+            fclose(fid);
+        else
+            colprintf(c, 'mri file has zero length!', '[ failure ]\n');
         end
     end
     colprintf(c, 'Voxel size', '%s\n', str_voxel);
