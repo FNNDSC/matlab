@@ -47,6 +47,19 @@ function dir_create(astr_dir)
         end
 end
 
+function [acstr_regions, elementRemoved] = region_remove(acstr_regions)
+    annotlen            = numel(acstr_regions);
+    elementRemoved      = 0;
+    for i=1:annotlen
+        for j=1:numel(C.mcstr_brainRegionSkip)
+            if strcmp(C.mcstr_brainRegionSkip{j}, acstr_regions{i})
+                acstr_regions(i) = [];
+                elementRemoved   = 1;
+                return;
+            end
+        end
+    end
+end
 
 C.mstack_proc 	                = push(C.mstack_proc, 'annotation_parse');
 
@@ -61,6 +74,15 @@ end
 
 [v_list, v_label, annot]        = read_annotation(str_annotationFile);
 c_structNames                   = annot.struct_names;
+
+if C.mb_brainRegionSkip
+    elementRemoved = 1;
+    while elementRemoved
+        [c_structNames, elementRemoved] = region_remove(c_structNames);
+    end
+end
+
+
 str_orig                        = C.mcstr_brainRegion{1};
 C.mcstr_brainRegion             = cell(1, numel(c_structNames)+1);
 C.mcstr_brainRegion(1:numel(c_structNames))     = c_structNames;
