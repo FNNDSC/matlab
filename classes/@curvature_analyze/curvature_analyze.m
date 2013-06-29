@@ -106,6 +106,12 @@ C.mcstr_curvFunc                = { 'K', 'H', 'K1', 'K2', 'S', 'C', 'thickness' 
 C.mc_subjectInfo                = {};
 C.mmap_subjectInfo              = containers.Map;
 C.mcstr_brainRegion             = {'entire'};
+C.mcstr_brainRegionSkip		= {'unknown', 'corpuscallosum', 'cingulate', 'insula'};	
+                                                % List of regions to skip in
+						%+ the analysis
+C.mb_brainRegionSkip		= 1;		% Flag controlling whether to
+						%+ skip or not
+				  
 C.mcstr_surfaceType             = {'smoothwm'};
 C.mcstr_coreData                = { 'histogram', 'curvature', 'centroid', ...
                                     'stats', 'axis', 'annotation' };
