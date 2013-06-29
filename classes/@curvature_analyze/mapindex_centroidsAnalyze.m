@@ -77,6 +77,11 @@ function [av_X, av_Y] = centroids_collect(astr_field)
     cstr_subj           = keys(map_subjCentroid);
     str_fieldNameX      = sprintf('x%s', astr_field);
     str_fieldNameY      = sprintf('y%s', astr_field);
+    if strcmp(astr_field, 'sk')
+        str_fieldNameX  = 'skewness';
+        str_fieldNameY  = 'kurtosis';
+    end
+
     for subj = 1:numel(cstr_subj)
         str_key         = cstr_subj{subj};
         s_centroid      = map_subjCentroid(str_key);
@@ -572,6 +577,7 @@ end
 function subjCentroid_analyze(astr_title)
     [v_Xn, v_Yn]        = centroids_collect('n');
     [v_Xp, v_Yp]        = centroids_collect('p');
+    [v_Xsk, v_Ysk]      = centroids_collect('sk');
     f_ymax              = max(v_Yp);
     f_xmin              = min(v_Xn);
     fh                  = subjCount*10;
@@ -595,6 +601,9 @@ function subjCentroid_analyze(astr_title)
     v_Sng                       = [];
     v_Mpg                       = [];
     v_Spg                       = [];
+    v_Msk                       = [];
+    v_Ssk                       = [];
+
     cstr_groupMembers           = {};
 
     b_negPlotsOK                = 1;
@@ -602,18 +611,24 @@ function subjCentroid_analyze(astr_title)
 
         [v_Xng v_Yng cstr_label]= gid_collect(v_Xn, v_Yn, v_gidIndex(group));
         [v_Xpg v_Ypg cstr_label]= gid_collect(v_Xp, v_Yp, v_gidIndex(group));
+        %keyboard;
+        [v_Xskg v_Yskg cstr_label]= gid_collect(v_Xsk, v_Ysk, v_gidIndex(group));
 
         v_negNaN        = isnan(v_Xng);
 
-        cstr_groupMembers{group}  = cstr_label;
-        v_Mng(1, group) = mean(v_Xng);
-        v_Mng(2, group) = mean(v_Yng);
-        v_Sng(1, group) = std(v_Xng);
-        v_Sng(2, group) = std(v_Yng);
-        v_Mpg(1, group) = mean(v_Xpg);
-        v_Mpg(2, group) = mean(v_Ypg);
-        v_Spg(1, group) = std(v_Xpg);
-        v_Spg(2, group) = std(v_Ypg);
+        cstr_groupMembers{group}        = cstr_label;
+        v_Mng(1, group)                 = mean(v_Xng);
+        v_Mng(2, group)                 = mean(v_Yng);
+        v_Sng(1, group)                 = std(v_Xng);
+        v_Sng(2, group)                 = std(v_Yng);
+        v_Mpg(1, group)                 = mean(v_Xpg);
+        v_Mpg(2, group)                 = mean(v_Ypg);
+        v_Spg(1, group)                 = std(v_Xpg);
+        v_Spg(2, group)                 = std(v_Ypg);
+        v_Mskg(1, group)                = mean(v_Xskg);
+        v_Mskg(2, group)                = mean(v_Yskg);
+        v_Sskg(1, group)                = std(v_Xskg);
+        v_Sskg(2, group)                = std(v_Yskg);
 
         b_negPlotsOK    = b_negPlotsOK & ~max(v_negNaN);
 
@@ -632,6 +647,9 @@ function subjCentroid_analyze(astr_title)
     meanstd_reportSave(v_Mpg, v_Spg, v_gidIndex, cstr_groupMembers,             ...
                             sprintf('%s/pos-%s.txt', str_wd, astr_title));
     groupSeparation_analyze(v_Mpg, v_Spg, v_gidIndex, str_wd, astr_title, 'pos');
+    meanstd_reportSave(v_Mskg, v_Sskg, v_gidIndex, cstr_groupMembers,           ...
+                            sprintf('%s/sk-%s.txt', str_wd, astr_title));
+    groupSeparation_analyze(v_Mskg, v_Sskg, v_gidIndex, str_wd, astr_title, 'sk');
     grid;
     xlabel('X group mean centroid position');
     ylabel('Y group mean centroid position');
