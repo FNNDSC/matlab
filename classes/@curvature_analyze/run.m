@@ -78,16 +78,24 @@ else
     csys_printf(C, 'Calculating centroids of histograms...\n');
     C               = map_centroidsProcess(C);
 
-    if C.mb_perSubjCentroidsPlot
-        csys_printf(C, 'Plotting/Saving centroids of histograms...\n');
-        C               = map_centroidsPlot(C);
+    %
+    % Note that the centroids analysis/plotting has now been depreciated
+    % in favour of the more powerful Python-based 'centroids_curvAnalysis'.
+    % This logic is preserved here for completeness sake. The default
+    % behaviour is to NOT perform the analysis here (C.mb_centroidsPlot=0)
+    if C.mb_centroidsPlot
+
+        if C.mb_perSubjCentroidsPlot
+            csys_printf(C, 'Plotting/Saving centroids of histograms...\n');
+            C               = map_centroidsPlot(C);
+        end
+
+        csys_printf(C, 'Analyzing/Saving centroids of histograms...\n');
+        C               = map_centroidsAnalyze(C);
+
+        csys_printf(C, 'Point spread plotting centroids of histograms...\n');
+        C               = map_centroidsPointSpread(C);
     end
-
-    csys_printf(C, 'Analyzing/Saving centroids of histograms...\n');
-    C               = map_centroidsAnalyze(C);
-
-    csys_printf(C, 'Point spread plotting centroids of histograms...\n');
-    C               = map_centroidsPointSpread(C);
 end
 
 csys_printf(C, 'Shutting down...\n');

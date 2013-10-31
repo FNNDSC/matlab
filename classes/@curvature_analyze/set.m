@@ -104,6 +104,8 @@ while length(propertyArgIn) >= 2,
         C.mb_useLines                   = val;
     case        'b_parcelFromLabelFile'
         C.mb_parcelFromLabelFile        = val;
+    case        'b_centroidsPlot'
+        C.mb_centroidsPlot              = val;
 
    otherwise
         error('curvature_analyze:Properties:set error');

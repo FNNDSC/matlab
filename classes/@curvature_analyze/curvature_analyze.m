@@ -38,6 +38,7 @@ g_arr_data                      = {};
 % class curvature_analyze
 %
 
+%
 % class internal data
 C.mstr_obj			= 'curvature_analyze';
 C.mstr_class			= 'unnamed';
@@ -150,6 +151,7 @@ C.ms_stats.f_pstd               = 0.0;
 C.ms_stats.f_nav                = 0.0;
 C.ms_stats.f_nstd               = 0.0;
 
+%
 %% Leaf node centroid
 C.ms_centroid                   = struct;
 C.ms_centroid.xn                = 0.0;
@@ -226,6 +228,14 @@ C.mb_imagesSave			= 0;		% If TRUE, save a set of
 						% jpg images 
 C.mb_centroidLabelPlot          = 1;            % if TRUE, add subject label
                                                 %+ to each centroid plot
+C.mb_centroidsPlot              = 0;            % If TRUE, perform the original
+                                                %+ plot and analysis of the 
+                                                %+ centroid clouds. This 
+                                                %+ analysis has now been 
+                                                %+ depreciated in favour of
+                                                %+ the more powerful Python-
+                                                %+ based applicatio: 
+                                                %+ 'centroid_curvAnalysis'.
 
 %
 % Colors for plots
