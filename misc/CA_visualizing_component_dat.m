@@ -27,6 +27,7 @@ dummyPlane=zeros(size(M_dat));
 [rows cols]=size(dummyPlane);
 C=zeros(rows, cols, 3);
 
+
 colorPlane = 1;
 switch str_color
     case 'r'
@@ -39,10 +40,13 @@ end
 
 figure(colorPlane);
 C(:,:,colorPlane)    = M_dat;
+set(gca,'position',[0 0 1 1],'units','normalized');
 
 image(C);
+axis off
 print('-dpsc','-r1200',sprintf('%s.eps', str_fileName));
-print('-djpeg',sprintf('%s.jpg', str_fileName));
+print('-djpeg',sprintf('%s.jpeg', str_fileName));
+
 
 cd(str_startDir);
 end
