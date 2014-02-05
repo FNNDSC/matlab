@@ -46,16 +46,19 @@ function [rM] = m2pc(aM, varargin)
 rM              = zeros(rows*cols, 3);
 
 % Create one long row of final values
-F               = aM'(:);
+aT              = aM';
+F               = aT(:);
 
 % Now build coordinate axes:
 r               = [1:rows]';
 c               = [1:cols];
 C               = repmat(c, rows, 1);
+Ct              = C';
 R               = repmat(r, 1, cols);
+Rt              = R';
 
 % Make certain that the array is float!
-rM              = double([R'(:) C'(:), F]);
+rM              = double([Rt(:) Ct(:), F]);
 
 
 %  index = 1;
