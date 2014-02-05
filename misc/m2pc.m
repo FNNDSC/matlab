@@ -60,15 +60,3 @@ Rt              = R';
 % Make certain that the array is float!
 rM              = double([Rt(:) Ct(:), F]);
 
-
-%  index = 1;
-%  for row=1:rows
-%      for col=1:cols
-%          rM(index, 1)    = row;
-%          rM(index, 2)    = col;
-%          rM(index, 3)    = aM(row, col);
-%          index           = index + 1;
-%      end
-%  end
-%  
-
